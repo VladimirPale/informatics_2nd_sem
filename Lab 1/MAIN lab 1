@@ -15,15 +15,43 @@ struct polygon
   double y1;
 };
 
+void getInput(int *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+                return;
+    } else {
+               cout << "Error input!" << "\t";
+        getInput(input);     }
+}
+void getInput(double *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+          return;
+    } else {
+        
+        cout << "Error input!" << "\t";
+        getInput(input);
+    }
+}
+
+
 void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
  {
      for(int i=current-1;i<current;++i)
      {
         cout<<"\n"<<"Polygon number:"<<i+1<<"\n";
-        cout<<"Enter coordinate x of the polygon vertex (x belongs to the range from -1000 to 1000)\t";
-        cin>>p_polygon[current-1].x1;
-        cout<<"Enter coordinate y of the polygon vertex (y belongs to the range from -1000 to 1000)\t";
-        cin>>p_polygon[current-1].y1;
+        cout<<"Enter coordinate x of the polygon vertex (x belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
+        //cin>>p_polygon[current-1].x1;
+        getInput(&p_polygon[current-1].x1);
+        cout<<"Enter coordinate y of the polygon vertex (y belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
+        //cin>>p_polygon[current-1].y1;
+        getInput(&p_polygon[current-1].y1);
         if ((p_polygon[current-1].x1<(-1)*E)||(p_polygon[current-1].x1>E)||(p_polygon[current-1].y1<(-1)*E)||(p_polygon[current-1].y1>E))
             {cout<<"Error coordinate\n"; input_coordinates(current,amount_polygons,p_polygon);}
         int R = p_polygon[current-1].modul_side/(2*sin(M_PI/p_polygon[0].amount_angles));
@@ -45,11 +73,13 @@ void input(int current,int &amount_polygons,polygon *&p_polygon) {
     {
       cout<<"Polygon  "<<i+1<<"\n";
       cout<<"Enter module of side\t";
-      cin>>p_polygon[i].modul_side;
+      getInput(&p_polygon[i].modul_side);
       if (p_polygon[i].modul_side<0){cout<<"Error of module of side\t";}
       cout<<"Enter amount of angles\t";
       do{
-      cin>>p_polygon[i].amount_angles;
+      //cin>>p_polygon[i].amount_angles;
+
+      getInput(&p_polygon[i].amount_angles);
       if(p_polygon[i].amount_angles<3)
       {
         cout<<"Amount of angles must be more than 2, Try again\t";
@@ -134,8 +164,6 @@ void P(int amount_polygons,polygon* p_polygon){
 void max_S_or_P(int amount_polygons,polygon* p_polygon,int b)
 {
   int arr = 0;
-  int number_max_P=0;
-  double max_perimetr=p_polygon[0].P;
   int array_number_max[amount_polygons];
   if(b==1){
     double max_S=p_polygon[0].S;
@@ -197,9 +225,10 @@ void delete_polygon(int& amount_polygons, polygon*& p_polygon)
   int number_polygon;
   cout << "Enter number of polygon: ";
   cin >> number_polygon;
+  getInput(&number_polygon);
   if (number_polygon < 1 || number_polygon > amount_polygons)
   {
-    cout << "No polygon with this number";
+    cout << "No polygon with this number\n";
     return;
   }
 
@@ -238,6 +267,7 @@ void submenu(int amount_polygons,polygon *p_polygon)
   cout<<"2.Determine polygon with max perimeter\n";
   cout<<"3.Return to previous menu\n";
   cin>>choice_submenu;
+  getInput(&choice_submenu);
   switch(choice_submenu)
     {
       case 1:
@@ -274,7 +304,7 @@ void menu(int amount_polygons,polygon *p_polygon)
   cout<<"3.Delete polygon\n";
   cout<<"4.Submenu max square and max perimetr\n";
   cout<<"5.Exit\n";
-  cin>>choice;
+  getInput(&choice);
   switch(choice)
     {
 
@@ -306,7 +336,7 @@ void menu(int amount_polygons,polygon *p_polygon)
       new_page();
       cout<<"Are you sure to exit? If yes press 1 if no press 2\n";
       int choice_exit;
-      cin>>choice_exit;
+      getInput(&choice_exit);
       if(choice_exit==1)
       {
         exit++;
