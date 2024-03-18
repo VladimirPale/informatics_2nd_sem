@@ -34,7 +34,7 @@ void getInput(double *input) {
     if (iss >> *input) {
           return;
     } else {
-        
+
         cout << "Error input!" << "\t";
         getInput(input);
     }
@@ -45,18 +45,21 @@ void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
  {
      for(int i=current-1;i<current;++i)
      {
+        double correct_y = 0;
         cout<<"\n"<<"Polygon number:"<<i+1<<"\n";
         cout<<"Enter coordinate x of the polygon vertex (x belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
-        //cin>>p_polygon[current-1].x1;
         getInput(&p_polygon[current-1].x1);
         cout<<"Enter coordinate y of the polygon vertex (y belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
-        //cin>>p_polygon[current-1].y1;
         getInput(&p_polygon[current-1].y1);
         if ((p_polygon[current-1].x1<(-1)*E)||(p_polygon[current-1].x1>E)||(p_polygon[current-1].y1<(-1)*E)||(p_polygon[current-1].y1>E))
             {cout<<"Error coordinate\n"; input_coordinates(current,amount_polygons,p_polygon);}
         int R = p_polygon[current-1].modul_side/(2*sin(M_PI/p_polygon[0].amount_angles));
-        if((sqrt(pow(p_polygon[current-1].x1,double(2)+(p_polygon[current-1].y1,double(2))))-R)<0)
-            {cout<<"Error coordinate\n"; input_coordinates(current,amount_polygons,p_polygon);}
+        if((sqrt(pow(p_polygon[current-1].x1,double(2))+pow(p_polygon[current-1].y1,double(2)))-R)<0)
+        {cout<<"Error coordinate\n";
+            correct_y = sqrt(pow(p_polygon[current-1].x1,double(2))+pow(R,double(2)));
+            cout<<"With this x, the y must modulo more than"<<correct_y<<"\n";
+            input_coordinates(current,amount_polygons,p_polygon);
+        }
      }
  }
 
@@ -77,8 +80,6 @@ void input(int current,int &amount_polygons,polygon *&p_polygon) {
       if (p_polygon[i].modul_side<0){cout<<"Error of module of side\t";}
       cout<<"Enter amount of angles\t";
       do{
-      //cin>>p_polygon[i].amount_angles;
-
       getInput(&p_polygon[i].amount_angles);
       if(p_polygon[i].amount_angles<3)
       {
