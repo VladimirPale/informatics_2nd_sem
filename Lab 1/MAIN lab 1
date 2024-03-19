@@ -21,9 +21,9 @@ void getInput(int *input) {
     istringstream iss(inputString);
 
     if (iss >> *input) {
-                return;
+        return;
     } else {
-               cout << "Error input!" << "\t";
+        cout << "Error input!" << "\t";
         getInput(input);     }
 }
 void getInput(double *input) {
@@ -43,7 +43,7 @@ void getInput(double *input) {
 
 void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
  {
-     
+
         double correct_y = 0;
         cout<<"\n"<<"Polygon number:"<<current<<"\n";
         cout<<"Enter coordinate x of the polygon vertex (x belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
@@ -55,9 +55,9 @@ void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
         int R = p_polygon[current-1].modul_side/(2*sin(M_PI/p_polygon[0].amount_angles));
         if((sqrt(pow(p_polygon[current-1].x1,double(2))+pow(p_polygon[current-1].y1,double(2)))-R)<0)
         {cout<<"Error coordinate\n";
-            correct_y = sqrt(pow(p_polygon[current-1].x1,double(2))+pow(R,double(2)));
-            cout<<"With this x, the y must modulo more than"<<correct_y<<"\n";
-            input_coordinates(current,amount_polygons,p_polygon);
+         correct_y = sqrt(pow(R,double(2))-pow(p_polygon[current-1].x1,double(2)));
+         cout<<"With this x, the y must modulo more than"<<correct_y<<"\n";
+         input_coordinates(current,amount_polygons,p_polygon);
         }
  }
 
@@ -70,24 +70,30 @@ void input(int current,int &amount_polygons,polygon *&p_polygon) {
     }
   delete[] p_polygon;
   p_polygon=new_p_polygon;
- 
-      cout<<"Polygon  "<<i+1<<"\n";
-      cout<<"Enter module of side\t";
-      getInput(&p_polygon[i].modul_side);
-      if (p_polygon[i].modul_side<0){cout<<"Error of module of side\t";}
-      cout<<"Enter amount of angles\t";
-      do{
-      getInput(&p_polygon[i].amount_angles);
-      if(p_polygon[i].amount_angles<3)
-      {
-        cout<<"Amount of angles must be more than 2, Try again\t";
-      }
-      }
-      while(p_polygon[i].amount_angles<3);
-      input_coordinates(current,amount_polygons,p_polygon);
+  cout<<"Polygon  "<<current<<"\n";
+  cout<<"Enter module of side\t";
+   do{
+  getInput(&p_polygon[current-1].modul_side);
+  if(p_polygon[current-1].modul_side<=0)
+    {
+     cout<<"Module of the side cannot take such a value\t";
+    }
+  }
+  while(p_polygon[current-1].modul_side<=0);
+  if (p_polygon[current-1].modul_side<0){cout<<"Error of module of side\t";}
+  cout<<"Enter amount of angles\t";
+  do{
+  getInput(&p_polygon[current-1].amount_angles);
+  if(p_polygon[current-1].amount_angles<3)
+    {
+     cout<<"Amount of angles must be more than 2, Try again\t";
+    }
+  }
+  while(p_polygon[current-1].amount_angles<3);
+  input_coordinates(current,amount_polygons,p_polygon);
 }
 
-void output(int current,int amount_polygons,polygon *p_polygon)
+/*void output(int current,int amount_polygons,polygon *p_polygon)
 {
     for(int i=0;i<amount_polygons;++i)
     {
@@ -102,22 +108,22 @@ void output(int current,int amount_polygons,polygon *p_polygon)
       double xR;
       double yR;
       double k;
-      double modx1=fabs(p_polygon[current-1].x1);
-      double mody1=fabs(p_polygon[current-1].y1);
+      double modx1=fabs(p_polygon[i].x1);
+      double mody1=fabs(p_polygon[i].y1);
       int flagX=1;
       int flagY=1;
-      if(p_polygon[current-1].x1<0){flagX=-1;}
-      if(p_polygon[current-1].y1<0){flagY=-1;}
-      R = p_polygon[current-1].modul_side/(2*sin(M_PI/p_polygon[0].amount_angles));
+      if(p_polygon[i].x1<0){flagX=-1;}
+      if(p_polygon[i].y1<0){flagY=-1;}
+      R = p_polygon[i].modul_side/(2*sin(M_PI/p_polygon[i].amount_angles));
       k=atan((mody1)/(modx1));
       dxR=R*cos(k);
       dyR=R*sin(k);
       xR=modx1-dxR;
       yR=mody1-dyR;
       cout<<"Coordinates of polygon:\n";
-      cout<<"Vertex 1: ( "<<p_polygon[current-1].x1<<" ; "<<p_polygon[current-1].y1<<" )\n";
-      double angle=2*M_PI/p_polygon[0].amount_angles;
-      for(int q=1;q<p_polygon[current-1].amount_angles;++q)
+      cout<<"Vertex 1: ( "<<p_polygon[i].x1<<" ; "<<p_polygon[i].y1<<" )\n";
+      double angle=2*M_PI/p_polygon[i].amount_angles;
+      for(int q=1;q<p_polygon[i].amount_angles;++q)
       {
          if(flagX != flagY){
             double NewAngle=((atan(mody1/modx1))-(q)*angle);
@@ -129,6 +135,52 @@ void output(int current,int amount_polygons,polygon *p_polygon)
             double Next_X=xR+R*cos(NewAngle);
             double Next_Y=yR+R*sin(NewAngle);
             cout<<"Vertex"<<q+1<<": (" <<Next_X*flagX<<" ; "<<Next_X*flagY<< ")\n";
+          }
+
+        }
+    }
+}*/
+void output(int current,int amount_polygons,polygon *p_polygon)
+{
+  if(amount_polygons==0)
+  {
+    cout<<"Error output\n";
+  }
+  for(int i=0;i<amount_polygons;++i)
+    {
+      cout<<"\n"<<"Polygon:"<<i+1<<"\n";
+      cout <<"Lenght of side="<<p_polygon[i].modul_side<<"\n";
+      cout <<"Amount angles="<<p_polygon[i].amount_angles<<"\n";
+      cout <<"Perimeter of polygon="<<p_polygon[i].P<<"\n";
+      cout<<"Area of polygon="<<p_polygon[i].S<<"\n";
+      double R,dxR,dyR,xR,yR,k;
+      double modx1=fabs(p_polygon[i].x1);
+      double mody1=fabs(p_polygon[i].y1);
+      int flagX=1;
+      int flagY=1;
+      if(p_polygon[i].x1<0){flagX=-1;}
+      if(p_polygon[i].y1<0){flagY=-1;}
+      R = p_polygon[i].modul_side/(2*sin(M_PI/p_polygon[i].amount_angles));
+      k=atan((mody1)/(modx1));
+      dxR=R*cos(k);
+      dyR=R*sin(k);
+      xR=modx1-dxR;
+      yR=mody1-dyR;
+      double angle=2*M_PI/p_polygon[i].amount_angles;
+      cout<<"Coordinates of polygon: "<<i+1<<"\n";
+      cout<<"Vertex 1: "<<p_polygon[i].x1<<";"<<p_polygon[i].y1<<"\n";
+      for(int j=1;j<p_polygon[i].amount_angles;++j)
+      {
+         if(flagX != flagY){
+            double NewAngle=((atan(mody1/modx1))-(j)*angle);
+            double Next_X=xR+R*cos(NewAngle);
+            double Next_Y=yR+R*sin(NewAngle);
+            cout<<"Vertex"<<j+1<<": " <<Next_X*flagX<<";"<<Next_Y*flagY<<"\n";
+          }else{
+            double NewAngle=atan(mody1/modx1)+(j)*angle;
+            double Next_X=xR+R*cos(NewAngle);
+            double Next_Y=yR+R*sin(NewAngle);
+            cout<<"Vertex"<<j+1<<": " <<Next_X*flagX<<";"<<Next_Y*flagY<<"\n";
           }
 
         }
