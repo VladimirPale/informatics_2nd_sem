@@ -43,10 +43,9 @@ void getInput(double *input) {
 
 void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
  {
-     for(int i=current-1;i<current;++i)
-     {
+     
         double correct_y = 0;
-        cout<<"\n"<<"Polygon number:"<<i+1<<"\n";
+        cout<<"\n"<<"Polygon number:"<<current<<"\n";
         cout<<"Enter coordinate x of the polygon vertex (x belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
         getInput(&p_polygon[current-1].x1);
         cout<<"Enter coordinate y of the polygon vertex (y belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
@@ -60,7 +59,6 @@ void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
             cout<<"With this x, the y must modulo more than"<<correct_y<<"\n";
             input_coordinates(current,amount_polygons,p_polygon);
         }
-     }
  }
 
 void input(int current,int &amount_polygons,polygon *&p_polygon) {
@@ -72,8 +70,7 @@ void input(int current,int &amount_polygons,polygon *&p_polygon) {
     }
   delete[] p_polygon;
   p_polygon=new_p_polygon;
-  for(int i=current-1;i<current;i++)
-    {
+ 
       cout<<"Polygon  "<<i+1<<"\n";
       cout<<"Enter module of side\t";
       getInput(&p_polygon[i].modul_side);
@@ -88,7 +85,6 @@ void input(int current,int &amount_polygons,polygon *&p_polygon) {
       }
       while(p_polygon[i].amount_angles<3);
       input_coordinates(current,amount_polygons,p_polygon);
-    }
 }
 
 void output(int current,int amount_polygons,polygon *p_polygon)
