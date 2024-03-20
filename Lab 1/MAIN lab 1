@@ -80,7 +80,6 @@ void input(int current,int &amount_polygons,polygon *&p_polygon) {
     }
   }
   while(p_polygon[current-1].modul_side<=0);
-  if (p_polygon[current-1].modul_side<0){cout<<"Error of module of side\t";}
   cout<<"Enter amount of angles\t";
   do{
   getInput(&p_polygon[current-1].amount_angles);
@@ -102,7 +101,7 @@ void output(int current,int amount_polygons,polygon *p_polygon)
   for(int i=0;i<amount_polygons;++i)
     {
       cout<<"\n"<<"Polygon:"<<i+1<<"\n";
-      cout <<"Lenght of side="<<p_polygon[i].modul_side<<"\n";
+      cout <<"Length of side="<<p_polygon[i].modul_side<<"\n";
       cout <<"Amount angles="<<p_polygon[i].amount_angles<<"\n";
       cout <<"Perimeter of polygon="<<p_polygon[i].P<<"\n";
       cout<<"Area of polygon="<<p_polygon[i].S<<"\n";
