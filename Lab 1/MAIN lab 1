@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#define E 1000
 using namespace std;
 struct polygon
 {
@@ -50,8 +49,8 @@ void input_coordinates(int current,int amount_polygons,polygon *p_polygon)
         getInput(&p_polygon[current-1].x1);
         cout<<"Enter coordinate y of the polygon vertex (y belongs to the range from"<< (-1)*E <<" to " <<E<<")\t";
         getInput(&p_polygon[current-1].y1);
-        if ((p_polygon[current-1].x1<(-1)*E)||(p_polygon[current-1].x1>E)||(p_polygon[current-1].y1<(-1)*E)||(p_polygon[current-1].y1>E))
-            {cout<<"Error coordinate\n"; input_coordinates(current,amount_polygons,p_polygon);}
+        //if ((p_polygon[current-1].x1<(-1)*E)||(p_polygon[current-1].x1>E)||(p_polygon[current-1].y1<(-1)*E)||(p_polygon[current-1].y1>E))
+            //{cout<<"Error coordinate\n"; input_coordinates(current,amount_polygons,p_polygon);}
         int R = p_polygon[current-1].modul_side/(2*sin(M_PI/p_polygon[0].amount_angles));
         if((sqrt(pow(p_polygon[current-1].x1,double(2))+pow(p_polygon[current-1].y1,double(2)))-R)<0)
         {cout<<"Error coordinate\n";
@@ -267,7 +266,6 @@ void submenu(int amount_polygons,polygon *p_polygon)
   cout<<"1.Determine polygon with max square\n";
   cout<<"2.Determine polygon with max perimeter\n";
   cout<<"3.Return to previous menu\n";
-  cin>>choice_submenu;
   getInput(&choice_submenu);
   switch(choice_submenu)
     {
