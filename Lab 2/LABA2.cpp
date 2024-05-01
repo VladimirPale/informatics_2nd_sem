@@ -68,54 +68,36 @@ double Get_travel_time()
 {
   return travel_time;
 }
-
-void getInput(int *input) {
-    string inputString;
-    getline(cin, inputString);
-    istringstream iss(inputString);
-
-    if (iss >> *input) {
-        return;
-    } else {
-        cout << "Error input!" << "\t";
-        getInput(input);     }
-}
-void getInput(double *input) {
-    string inputString;
-    getline(cin, inputString);
-    istringstream iss(inputString);
-
-    if (iss >> *input) {
-          return;
-    } else {
-
-        cout << "Error input!" << "\t";
-        getInput(input);
+void calculating_speed(int amount_vehicles,Vehicle *vehicles)/////////////////////////////////////////////
+{
+   for(int i=0;i<amount_vehicles;i++)
+    {
+      vehicles[i].speed=fabs(((vehicles[i].power-(vehicles[i].power/2))*20)/pow((double)vehicles[i].amount_wheels,(double)2));
     }
 }
-
-
-void S (int amount_polygons,polygon* p_polygon){
-    for(int i=0;i<amount_polygons;++i)
-      {
-        if(p_polygon[i].amount_angles==3)
-        {
-          p_polygon[i].S=sqrt(3)/4*pow(p_polygon[i].modul_side,2);
-        }
-        if(p_polygon[i].amount_angles==4)
-        {
-          p_polygon[i].S=pow(p_polygon[i].modul_side,2);
-        }
-        if(p_polygon[i].amount_angles>4)
-        {
-          p_polygon[i].S=p_polygon[i].amount_angles*pow(p_polygon[i].modul_side,2)/(4*tan(M_PI/p_polygon[i].amount_angles));
-        }
-      }
+friend void ShowSpeed(int amount_vehicles,Vehicle *vehicles,int i)
+{
+  cout<<"Speed:"<<vehicles[i].speed<<"\n";
 }
-void P(int amount_polygons,polygon* p_polygon){
-    for(int i =0; i<amount_polygons; i++){
-        p_polygon[i].P = p_polygon[i].amount_angles*p_polygon[i].modul_side;
+
+double Get_speed(){ 
+    return speed; 
+    
+}
+void calculating_fuel_consumption(int amount_vehicles,Vehicle *vehicles)//////////////////////////////
+{
+  for(int i=0;i<amount_vehicles;i++)
+    {
+       vehicles[i].fuel_consumption=fabs(sqrt(vehicles[i].power)/pow((double)1.5,(double)(vehicles[i].power/1000)));
     }
+}
+double Get_fuel_consumption()
+{ 
+    return fuel_consumption; 
+}
+friend void Showfuelcons(int amount_vehicles,Vehicle *vehicles,int i)
+{
+ cout<<"Fuel consumption:"<<vehicles[i].fuel_concumption<<"\n";
 }
 
 void max_S_or_P(int amount_polygons,polygon* p_polygon,int b)
@@ -214,39 +196,6 @@ void new_page()
     }
 }
 
-void submenu(int amount_polygons,polygon *p_polygon)
-{
-  int exit_sub=0;
-  while(exit_sub==0)
-  {
-  int choice_submenu;
-  cout<<"1.Determine polygon with max square\n";
-  cout<<"2.Determine polygon with max perimeter\n";
-  cout<<"3.Return to previous menu\n";
-  getInput(&choice_submenu);
-  switch(choice_submenu)
-    {
-      case 1:
-      new_page();
-      max_S_or_P (amount_polygons,p_polygon,1);
-      break;
-
-      case 2:
-      new_page();
-      max_S_or_P(amount_polygons,p_polygon,0);
-      break;
-
-      case 3:
-      new_page();
-      exit_sub++;
-      break;
-
-      default:
-      cout<<"Error of submenu\n";
-
-    }
-  }
-}
 void menu(int amount_polygons,polygon *p_polygon)
 {
   int exit=0;
@@ -309,9 +258,49 @@ void menu(int amount_polygons,polygon *p_polygon)
     }
   }
 }
-int main(){
-    int amount_polygons=0;
-    polygon *p_polygon=NULL;
-    menu(amount_polygons,p_polygon);
+void getInput(int *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+        return;
+    } else {
+        cout << "Error input!" << "\t";
+        getInput(input);     }
 }
+void getInput(double *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+          return;
+    } else {
+
+        cout << "Error input!" << "\t";
+        getInput(input);
+    }
+}
+
+int main() {
+  int amount_vehicles;
+  int lenght_of_the_track=0;
+  cout << "How many vehicles do you want to create?";
+  getInput(&amount_vehicles);
+  do
+    {
+      if(amount_vehicles<=0)
+       {
+          cout<<"Error, try again \n";
+          getInput(&amount_vehicles);
+      }
+    } while(amount_vehicles<=0);
+  Vehicle *vehicles=new Vehicle[amount_vehicles];
+  menu(amount_vehicles, vehicles, lenght_of_the_track);
+  delete [] vehicles;
+  return 0;
+}
+
+
 
