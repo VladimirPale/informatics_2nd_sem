@@ -6,7 +6,7 @@
 using namespace std;
 class CARS{
 private:
-char name_of_car[30];
+string name_of_car;
 int amount_wheels;
 double kilometers;
 double volume_tank;
@@ -16,17 +16,12 @@ public:
 double speed;
 double fuel_consumption;
 CARS(int amount_cars,CARS* vehicles);
-void Set_name(char carname[30])
-{
-  strcpy(name,carname);
-}
-char Get_name()
-{
-  for(int i=0;i<30;i++)
-    {
-      cout<<name[i];
+
+void Set_name(string name_of_car) {
+    this->name_of_car=name_of_car;
     }
-  return 0;
+string Get_name() {
+    return name_of_car;
 }
 void Set_amount_wheels(int amount_wheels)
 {
@@ -68,96 +63,83 @@ double Get_travel_time()
 {
   return travel_time;
 }
-void calculating_speed(int amount_vehicles,Vehicle *vehicles)/////////////////////////////////////////////
+void calculating_speed(int amount_vehicles,CARS *vehicles)/////////////////////////////////////////////
 {
    for(int i=0;i<amount_vehicles;i++)
     {
       vehicles[i].speed=fabs(((vehicles[i].power-(vehicles[i].power/2))*20)/pow((double)vehicles[i].amount_wheels,(double)2));
     }
 }
-friend void ShowSpeed(int amount_vehicles,Vehicle *vehicles,int i)
+friend void ShowSpeed(int amount_vehicles,CARS *vehicles,int i)
 {
   cout<<"Speed:"<<vehicles[i].speed<<"\n";
 }
 
-double Get_speed(){ 
-    return speed; 
-    
+double Get_speed(){
+    return speed;
+
 }
-void calculating_fuel_consumption(int amount_vehicles,Vehicle *vehicles)//////////////////////////////
+};
+void calculating_fuel_consumption(int amount_vehicles,CARS *vehicles)//////////////////////////////
 {
   for(int i=0;i<amount_vehicles;i++)
     {
-       vehicles[i].fuel_consumption=fabs(sqrt(vehicles[i].power)/pow((double)1.5,(double)(vehicles[i].power/1000)));
+       vehicles[i].fuel_consumption=fabs(pow((vehicles[i].power),0.5)/pow((double)1.5,(double)(vehicles[i].power/1000)));
     }
 }
 double Get_fuel_consumption()
-{ 
-    return fuel_consumption; 
+{
+    return fuel_consumption;
 }
-friend void Showfuelcons(int amount_vehicles,Vehicle *vehicles,int i)
+friend void Showfuelcons(int amount_vehicles,CARS *vehicles,int i)
 {
  cout<<"Fuel consumption:"<<vehicles[i].fuel_concumption<<"\n";
 }
+int refueling(int lenght_of_the_track, int amount_vehicles, Vehicle *vehicles, int i){
+      int number_of_refuelings;
+      number_of_refuelings=(int)(((lenght_of_the_track/100)*vehicles[i].Get_fuel_consumption())/vehicles[i].Get_volume_tank());
+  return number_of_refuelings;
+}
 
-void max_S_or_P(int amount_polygons,polygon* p_polygon,int b)
+
+
+
+void Calculation_track(int lenght_of_the_track, CARS *vehicles, int amount_vehicles)
 {
-  int arr = 0;
-  int array_number_max[amount_polygons];
-  if(b==1){
-    double max_S=p_polygon[0].S;
-    for (int j = 1; j < amount_polygons; j++){
-        if(p_polygon[j].S - max_S > 0)
-        {
-            max_S = p_polygon[j].S;
+    int number_refills[amount_vehicles];
+    for (int i =0; i< amount_vehicles; i++){
+        number_refills[i] = refueling(lenght_of_the_track, amount_vehicles,vehicles, i)
+    }
+    double time_of_race[amount_vehicles];
+    for (int i =0; i< amount_vehicles; i++){
+     time_of_race[i] = (lenght_of_the_track/ vehicles[i].Get_speed)
+    }
+}
+
+void PrintAndSortRaceResults(int amount_vehicles, string* name_v, double* time_of_the_race, int* num_refuelings) {
+    string carname[amount_vehicles];
+    for(int i = 0; i < amount_vehicles; i++){
+        carname[i] = vehicles[i].Get_name
+    }
+    cout << "Determination complete!\n";
+    for (int i = 0; i < amount_vehicles; i++) {
+        for (int j = 0; j < amount_vehicles - 1; ++j) {
+            if (time_of_the_race[j] > time_of_the_race[j + 1] || (time_of_the_race[j] == time_of_the_race[j + 1] && num_refuelings[j] > num_refuelings[j + 1])) {
+                swap(time_of_the_race[j], time_of_the_race[j + 1]);
+                swap(num_refuelings[j], num_refuelings[j + 1]);
+                swap(carname[j], carname[j + 1]);
+            }
         }
     }
-    for (int k = 0; k < amount_polygons; k++){
-        if(p_polygon[k].S == max_S){
-            array_number_max[arr] = k;
-            arr++;
-        }
-    }
-  if(arr==0)
-  {
-    cout<<"Polygon with max square is polygon number: "<<arr+1<<"\n";
-  }
-  if(arr>0)
-  {
-    cout<<"Polygons with max square:\n";
-    for(int z=0;z<arr;++z)
-      {
-        cout<<"Polygon number: "<<array_number_max[z]+1<<"\n";
-      }
-  }
-  }
-  if(b==0){
-    double max_P=p_polygon[0].P;
-    for (int j = 1; j < amount_polygons; j++){
-        if(p_polygon[j].P - max_P > 0){
-            max_P = p_polygon[j].P;
-        }
-    }
-    for (int k = 0; k < amount_polygons; k++){
-        if(p_polygon[k].P == max_P){
-            array_number_max[arr] = k;
-            arr++;
-        }
-    }
-    if(arr==0)
-    {
-        cout<<"Polygon with max perimetr is polygon number:"<<arr+1<<"\n";
-    }
-    if(arr>0)
-    {
-        cout<<"Polygons with max perimetr:\n";
-        for(int z=0;z<arr;++z)
-        {
-        cout<<"Polygon number:"<<array_number_max[z]+1<<"\n";
-        }
-    }
-  }
- }
+    for (int i = 0; i < amount_vehicles; i++) {
+        cout << "VEHICLE: " << name_v[i] << "\n";
+        int hours = (int)(time_of_the_race[i]);
+        int minutes = (int)((time_of_the_race[i] - hours) * 60);
+        int seconds =(int)((time_of_the_race[i] * 3600) - (hours * 3600) - (minutes * 60));
+
+        cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";
+        cout << "Amount_refuelings: " << num_refuelings[i] << "\n";
+}
 
 void delete_polygon(int& amount_polygons, polygon*& p_polygon)
 {
