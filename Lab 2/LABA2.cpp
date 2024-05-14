@@ -186,21 +186,20 @@ void menu(int amount_polygons,polygon *p_polygon)
   {
   int choice;
   cout<<"MENU\n";
-  cout<<"1.Input new polygon\n";
-  cout<<"2.Output information about all polygons\n";
-  cout<<"3.Delete polygon\n";
-  cout<<"4.Submenu max square and max perimetr\n";
-  cout<<"5.Exit\n";
+     cout<<"1.Input new vehicles"<<"\n";
+      cout<<"2.Check information about vehicles"<<"\n";
+      cout<<"3.Enter lenght of the track"<<"\n";;
+      cout<<"4.Determination of track"<<"\n";
+      cout<<"5.Exit"<<"\n";
   getInput(&choice);
   switch(choice)
     {
 
       case 1:
       new_page();
-      current++;
-      input(current,amount_polygons,p_polygon);
-      S(amount_polygons,p_polygon);
-      P(amount_polygons,p_polygon);
+      
+    
+     
       break;
 
       case 2:
@@ -210,13 +209,12 @@ void menu(int amount_polygons,polygon *p_polygon)
 
       case 3:
       new_page();
-      delete_polygon(amount_polygons,p_polygon);
-      current--;
+
+    
       break;
 
       case 4:
       new_page();
-      submenu(amount_polygons,p_polygon);
       break;
 
       case 5:
