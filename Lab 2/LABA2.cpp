@@ -12,11 +12,10 @@ double kilometers;
 double volume_tank;
 double power;
 double travel_time;
-public:
 double speed;
 double fuel_consumption;
-CARS(int amount_cars,CARS* vehicles);
-
+public:
+CARS(int amount_vehicles,CARS* vehicles);
 void Set_name(string name_of_car) {
     this->name_of_car=name_of_car;
     }
@@ -79,47 +78,52 @@ double Get_speed(){
     return speed;
 
 }
-};
+
 void calculating_fuel_consumption(int amount_vehicles,CARS *vehicles)//////////////////////////////
 {
   for(int i=0;i<amount_vehicles;i++)
     {
-       vehicles[i].fuel_consumption=fabs(pow((vehicles[i].power),0.5)/pow((double)1.5,(double)(vehicles[i].power/1000)));
-    }
+       vehicles[i].fuel_consumption = fabs(pow((vehicles[i].power), 0.5) / pow((double)1.5, (double)(vehicles[i].power / 1000)));//18,5
+
+}
 }
 double Get_fuel_consumption()
 {
-    return fuel_consumption;
+   return fuel_consumption;
 }
+
 friend void Showfuelcons(int amount_vehicles,CARS *vehicles,int i)
 {
- cout<<"Fuel consumption:"<<vehicles[i].fuel_concumption<<"\n";
+ cout<<"Fuel consumption:"<<vehicles[i].fuel_consumption<<"\n";
 }
-int refueling(int lenght_of_the_track, int amount_vehicles, Vehicle *vehicles, int i){
+CARS( ){
+  {
+  cout<<"Vehicle created"<<"\n";
+  }
+}
+};
+int refueling(int lenght_of_the_track, int amount_vehicles, CARS *vehicles, int i){
       int number_of_refuelings;
       number_of_refuelings=(int)(((lenght_of_the_track/100)*vehicles[i].Get_fuel_consumption())/vehicles[i].Get_volume_tank());
   return number_of_refuelings;
 }
 
-
-
-
 void Calculation_track(int lenght_of_the_track, CARS *vehicles, int amount_vehicles)
 {
     int number_refills[amount_vehicles];
     for (int i =0; i< amount_vehicles; i++){
-        number_refills[i] = refueling(lenght_of_the_track, amount_vehicles,vehicles, i)
+        number_refills[i] = refueling(lenght_of_the_track, amount_vehicles,vehicles, i);
     }
     double time_of_race[amount_vehicles];
     for (int i =0; i< amount_vehicles; i++){
-     time_of_race[i] = (lenght_of_the_track/ vehicles[i].Get_speed)
+    time_of_race[i] = (lenght_of_the_track /double(vehicles[i].Get_speed()));
     }
 }
 
-void PrintAndSortRaceResults(int amount_vehicles, string* name_v, double* time_of_the_race, int* num_refuelings) {
+void PrintAndSortRaceResults(int amount_vehicles, string* name_v, double* time_of_the_race, int* num_refuelings,CARS *vehicles) {
     string carname[amount_vehicles];
     for(int i = 0; i < amount_vehicles; i++){
-        carname[i] = vehicles[i].Get_name
+        carname[i] = vehicles[i].Get_name();
     }
     cout << "Determination complete!\n";
     for (int i = 0; i < amount_vehicles; i++) {
@@ -140,8 +144,8 @@ void PrintAndSortRaceResults(int amount_vehicles, string* name_v, double* time_o
         cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";
         cout << "Amount_refuelings: " << num_refuelings[i] << "\n";
 }
-
-void delete_polygon(int& amount_polygons, polygon*& p_polygon)
+}
+/*void delete_polygon(int& amount_polygons, polygon*& p_polygon)
 {
   int number_polygon;
   cout << "Enter number of polygon: ";
@@ -168,7 +172,7 @@ void delete_polygon(int& amount_polygons, polygon*& p_polygon)
   delete[] p_polygon;
   p_polygon = new_p_polygon;
   amount_polygons--;
-}
+}*/
 
 void new_page()
 {
@@ -178,66 +182,100 @@ void new_page()
     }
 }
 
-void menu(int amount_polygons,polygon *p_polygon)
+CARS::CARS(int amount_vehicles, CARS* vehicles){
+  for(int i=0;i<amount_vehicles;i++)
+  {
+    string carname;
+    int amount_wheels;
+    double volume_tank;
+    double power;
+    cout<<"\nCAR №"<<i+1<<"\n";
+    cout<<"Enter name of the car: ";
+    cin>>carname;
+    vehicles[i].Set_name(carname);
+    cout<<"Enter amount of wheels: ";
+    getInput(&amount_wheels);
+    do
+    {
+      if(amount_wheels<=0)
+      {
+        cout<<"Error! Try again(amount wheels>0)"<<"\n";
+        getInput(&amount_wheels);
+      }
+    } while(amount_wheels<=0);
+    vehicles[i].Set_amount_wheels(amount_wheels);
+    cout<<"Enter volume of tank: ";
+    getInput(&volume_tank);
+    do
+    {
+      if(volume_tank<=0)
+      {
+        cout<<"Error! Try again(volume tank>0)"<<"\n";
+        getInput(&volume_tank);
+      }
+    } while(volume_tank<=0);
+    vehicles[i].Set_volume_tank(volume_tank);
+    cout<<"Enter power: ";
+    getInput(&power);
+    do
+    {
+      if(power<=0)
+      {
+        cout<<"Error! Try again(power>0)"<<"\n";
+        getInput(&power);
+      }
+    } while(power<=0);
+    vehicles[i].Set_power(power);
+  }
+}
+
+
+void menu(int amount_venicles,CARS *vehicles, int lenght_of_the_track)
 {
+  int choice;
   int exit=0;
-  int current=0;
-  while(exit==0)
+  int cars=0;
   {
   int choice;
   cout<<"MENU\n";
-     cout<<"1.Input new vehicles"<<"\n";
-      cout<<"2.Check information about vehicles"<<"\n";
-      cout<<"3.Enter lenght of the track"<<"\n";;
-      cout<<"4.Determination of track"<<"\n";
-      cout<<"5.Exit"<<"\n";
+  cout<<"1.Input information about vehicles"<<"\n";
+  cout<<"2.Output information about vehicles"<<"\n";
+  cout<<"3.Input the lenght of track"<<"\n";;
+  cout<<"4.Calculation_track"<<"\n";
+  cout<<"5.Exit"<<"\n";
   getInput(&choice);
   switch(choice)
     {
 
       case 1:
       new_page();
-      
-    
-     
+      CARS(amount_vehicles,vehicles);
+      for(int i=cars-1;i<cars;++i)
+      {
+      vehicles[i].calculating_fuel_consumption(amount_vehicles, vehicles);
+      vehicles[i].calculating_speed(amount_vehicles, vehicles);
+      }
+      cars++;
+      break;
+
       break;
 
       case 2:
       new_page();
-      output(current,amount_polygons,p_polygon);
+
       break;
 
-      case 3:
-      new_page();
 
-    
-      break;
-
-      case 4:
-      new_page();
-      break;
-
-      case 5:
-      new_page();
-      cout<<"Are you sure to exit? If yes press 1 if no press 2\n";
-      int choice_exit;
-      getInput(&choice_exit);
-      if(choice_exit==1)
-      {
-        exit++;
-      }
-      if(choice_exit==2)
-      {
-        new_page();
-        menu(amount_polygons,p_polygon);
-      }
-      break;
-      default:
-      cout<<"Error of menu\n";
+    default:
+      cout<<"Error! Try again"<<"\n";
 
     }
   }
 }
+
+
+
+
 void getInput(int *input) {
     string inputString;
     getline(cin, inputString);
@@ -264,7 +302,7 @@ void getInput(double *input) {
 }
 
 int main() {
-  int amount_vehicles;
+  int amount_vehicles=0;
   int lenght_of_the_track=0;
   cout << "How many vehicles do you want to create?";
   getInput(&amount_vehicles);
@@ -276,11 +314,8 @@ int main() {
           getInput(&amount_vehicles);
       }
     } while(amount_vehicles<=0);
-  Vehicle *vehicles=new Vehicle[amount_vehicles];
+  CARS *vehicles=new CARS[amount_vehicles];
   menu(amount_vehicles, vehicles, lenght_of_the_track);
   delete [] vehicles;
   return 0;
 }
-
-
-
