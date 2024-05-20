@@ -1,6 +1,8 @@
-#include <iostream>
+/*#include <iostream>
 #include <typeinfo>
 
+
+using namespace std;
 class Base {
 public:
     virtual ~Base() {}
@@ -9,28 +11,52 @@ public:
 class Derived : public Base {
 public:
     void derivedMethod() {
-        std::cout << "Метод производного класа" << std::endl;
+        cout << "Метод производного класа" << std::endl;
     }
 };
-
+class AnotherClass {};
 int main() {
+    setlocale(LC_ALL, "Russian");
     Base* basePtr = new Derived();
+    //Base* basePtr = new Base();
+    AnotherClass* anotherPtr = new AnotherClass();
+
 
     if (typeid(*basePtr) == typeid(Derived)) {
-        std::cout << "Успешно приведен к производному классу" << std::endl;
-        Derived* derivedPtr = static_cast<Derived*>(basePtr);
+        cout << "Успешно приведен к производному классу" << endl;
+        Derived* derivedPtr = (Derived*)(basePtr);
         derivedPtr->derivedMethod();
     } else {
-        std::cout << "Не удалось выполнить приведение к производному классу" << std::endl;
+        cout << "Не удалось выполнить приведение к производному классу" << endl;
+    }
+
+    ///////////////////////////////////////////////////////////
+    Base* anotherBasePtr = new Base();
+    if (typeid(*anotherBasePtr) == typeid(AnotherClass)) {     //AnotherClass не является производным от Base
+        AnotherClass* anotherDerivedPtr = (AnotherClass*)(anotherBasePtr);
+        cout<<"AnotherClass приведен";
+    } else {
+        cout << "Приведение к невозможному типу" << endl;
+    }
+
+    ///////////////////////////////////////////////////////
+    if (typeid(*basePtr) == typeid(AnotherClass)) {
+        AnotherClass* anotherDerivedPtr = (AnotherClass*)(basePtr);
+    } else {
+        cout << "Приведение к невозможному типу" << endl;
     }
 
     delete basePtr;
+    delete anotherPtr;
 
     return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
+#include <typeinfo>
+
+using namespace std;
 
 class Base {
 public:
@@ -40,33 +66,47 @@ public:
 class Derived : public Base {
 public:
     void derivedMethod() {
-        std::cout << "Вызываемый производный метод" << std::endl;
+        cout << "Метод производного класса" << endl;
     }
 };
 
+class AnotherClass {};
+
 int main() {
-    Base* basePtr = new  Derived();
+    setlocale(LC_ALL, "Russian");
+
+    Base* basePtr = new Derived();
+    AnotherClass* anotherPtr = new AnotherClass();
 
     Derived* derivedPtr = dynamic_cast<Derived*>(basePtr);
     if (derivedPtr) {
-        std::cout << "Успешно приведен к производному классу" << std::endl;
+        cout << "Успешно приведен к производному классу" << endl;
         derivedPtr->derivedMethod();
     } else {
-        std::cout << "Не удалось выполнить приведение к производному классу" << std::endl;
+        cout << "Не удалось выполнить приведение к производному классу" << endl;
+    }
+
+
+    AnotherClass* anotherDerivedPtr = dynamic_cast<AnotherClass*>(basePtr);
+    if (anotherDerivedPtr) {
+        cout << "Успешно приведен к классу AnotherClass" << endl;
+    } else {
+        cout << "Приведение к невозможному типу" << endl;
     }
 
     delete basePtr;
+    delete anotherPtr;
 
     return 0;
-}
 
+}*/
 
 ////////////////////////////////////////
 
 
-#include <iostream>
+/*#include <iostream>
 #include <typeinfo>
-
+using namespace std;
 class Base {
 public:
     virtual ~Base() {}
@@ -74,35 +114,37 @@ public:
 
 class Derived : public Base {
 public:
-    
+
 };
 
 int main() {
-    Base* basePtr = new Derived();
+    setlocale(LC_ALL, "Russian");
+    //Base* basePtr = new Derived();
+    Base* basePtr = new Base();
 
     if (typeid(*basePtr) == typeid(Derived)) {
-        std::cout << "basePtr указывает на объект класса Derived" << std::endl;
+        cout << "basePtr указывает на объект класса Derived" << endl;
     } else {
-        std::cout << "basePtr указывает на объект класса Base" << std::endl;
+        cout << "basePtr указывает на объект класса Base" <<endl;
     }
 
     if (typeid(basePtr) == typeid(Base*)) {
-        std::cout << "basePtr является указателем на объект класса Base" << std::endl;
+        cout << "basePtr класса Base" << endl;
     } else if (typeid(basePtr) == typeid(Derived*)) {
-        std::cout << "basePtr является указателем на объект класса Derived" << std::endl;
+        cout << "basePtr класса Derived" << endl;
     }
 
     delete basePtr;
 
     return 0;
-}
+}*/
 
 
 
+/*#include <iostream>
+#include <typeinfo>
 
-
-
-#include <iostream>
+using namespace std;
 
 class Base {
 public:
@@ -111,25 +153,37 @@ public:
 
 class Derived : public Base {
 public:
-    
+
 };
 
 int main() {
+    setlocale(LC_ALL, "Russian");
     Base* basePtr = new Derived();
+    //Base* basePtr = new Base();
 
     if (dynamic_cast<Derived*>(basePtr) != nullptr) {
-        std::cout << "basePtr указывает на объект класса Derived" << std::endl;
+        cout << "basePtr указывает на объект класса Derived" << endl;
     } else {
-        std::cout << "basePtr указывает на объект класса Base" << std::endl;
+        cout << "basePtr указывает на объект класса Base" << endl;
     }
 
     if (dynamic_cast<Base*>(basePtr) != nullptr) {
-        std::cout << "basePtr является указателем на объект класса Base" << std::endl;
+        cout << "basePtr класса Base" << endl;
     } else if (dynamic_cast<Derived*>(basePtr) != nullptr) {
-        std::cout << "basePtr является указателем на объект класса Derived" << std::endl;
+        cout << "basePtr класса Derived" << endl;
     }
 
     delete basePtr;
 
     return 0;
-}
+}*/
+
+
+
+
+
+
+
+
+
+
