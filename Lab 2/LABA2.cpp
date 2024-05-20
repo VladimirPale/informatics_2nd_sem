@@ -4,6 +4,31 @@
 #include <string>
 #include <sstream>
 using namespace std;
+void getInput(int *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+        return;
+    } else {
+        cout << "Error input!" << "\t";
+        getInput(input);     }
+}
+void getInput(double *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+          return;
+    } else {
+
+        cout << "Error input!" << "\t";
+        getInput(input);
+    }
+}
+
 class CARS{
 private:
 string name_of_car;
@@ -69,7 +94,7 @@ void calculating_speed(int amount_vehicles,CARS *vehicles)//////////////////////
       vehicles[i].speed=fabs(((vehicles[i].power-(vehicles[i].power/2))*20)/pow((double)vehicles[i].amount_wheels,(double)2));
     }
 }
-friend void ShowSpeed(int amount_vehicles,CARS *vehicles,int i)
+friend void PrintSpeed(int amount_vehicles,CARS *vehicles,int i)
 {
   cout<<"Speed:"<<vehicles[i].speed<<"\n";
 }
@@ -181,6 +206,18 @@ void new_page()
       cout<<"\n";
     }
 }
+void output(int amount_vehicles,CARS *vehicles)
+{
+  for(int i=0;i<amount_vehicles;i++)
+    {
+      cout<<"NAME OF CAR: "<<vehicles[i].Get_name()<<"\n";
+      cout<<"AMOUNT THE WHEELS: "<<vehicles[i].Get_amount_wheels()<<"\n";
+      PrintSpeed(amount_vehicles, vehicles, i);
+      cout<<"VOLUME OF TANK: "<<vehicles[i].Get_volume_tank()<<"\n";
+      Showfuelcons(amount_vehicles, vehicles, i);
+      cout<<"ENGINE POWER: "<<vehicles[i].Get_power()<<"\n";
+    }
+ }
 
 CARS::CARS(int amount_vehicles, CARS* vehicles){
   for(int i=0;i<amount_vehicles;i++)
@@ -230,11 +267,12 @@ CARS::CARS(int amount_vehicles, CARS* vehicles){
 }
 
 
-void menu(int amount_venicles,CARS *vehicles, int lenght_of_the_track)
+void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
 {
   int choice;
   int exit=0;
-  int cars=0;
+  int flag=0;
+  while (exit==0)
   {
   int choice;
   cout<<"MENU\n";
@@ -250,18 +288,20 @@ void menu(int amount_venicles,CARS *vehicles, int lenght_of_the_track)
       case 1:
       new_page();
       CARS(amount_vehicles,vehicles);
-      for(int i=cars-1;i<cars;++i)
+      for(int i=-1;i<amount_vehicles;++i)
       {
       vehicles[i].calculating_fuel_consumption(amount_vehicles, vehicles);
       vehicles[i].calculating_speed(amount_vehicles, vehicles);
       }
-      cars++;
+      flag++;
       break;
-
-      break;
-
       case 2:
       new_page();
+      if(flag==0){
+        cout<<"You have not entered the vehicles!(TRY AGAIN)"<<"\n";
+        break;
+      }
+      output(amount_vehicles,vehicles);
 
       break;
 
@@ -276,30 +316,6 @@ void menu(int amount_venicles,CARS *vehicles, int lenght_of_the_track)
 
 
 
-void getInput(int *input) {
-    string inputString;
-    getline(cin, inputString);
-    istringstream iss(inputString);
-
-    if (iss >> *input) {
-        return;
-    } else {
-        cout << "Error input!" << "\t";
-        getInput(input);     }
-}
-void getInput(double *input) {
-    string inputString;
-    getline(cin, inputString);
-    istringstream iss(inputString);
-
-    if (iss >> *input) {
-          return;
-    } else {
-
-        cout << "Error input!" << "\t";
-        getInput(input);
-    }
-}
 
 int main() {
   int amount_vehicles=0;
