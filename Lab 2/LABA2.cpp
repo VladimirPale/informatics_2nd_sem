@@ -85,7 +85,7 @@ void calculating_speed(int amount_vehicles,CARS *vehicles)//////////////////////
 }
 
 
-friend void PrintSpeed(CARS *vehicles,int i)
+void PrintSpeed(CARS *vehicles,int i)
 {
   cout<<"Speed:"<<vehicles[i].speed<<"\n";
 }
@@ -105,7 +105,7 @@ double Get_fuel_consumption()
    return fuel_consumption;
 }
 
-friend void Showfuelcons(CARS *vehicles,int i)
+void Showfuelcons(CARS *vehicles,int i)
 {
  cout<<"Fuel consumption:"<<vehicles[i].fuel_consumption<<"\n";
 }
@@ -180,9 +180,9 @@ void output(int amount_vehicles,CARS *vehicles)
     {
       cout<<"NAME OF CAR: "<<vehicles[i].Get_name()<<"\n";
       cout<<"AMOUNT THE WHEELS: "<<vehicles[i].Get_amount_wheels()<<"\n";
-      PrintSpeed(vehicles, i);
+      vehicles[i].PrintSpeed(vehicles, i);
       cout<<"VOLUME OF TANK: "<<vehicles[i].Get_volume_tank()<<"\n";
-      Showfuelcons(vehicles, i);
+      vehicles[i].Showfuelcons(vehicles, i);
       cout<<"ENGINE POWER: "<<vehicles[i].Get_power()<<"\n";
     }
  }
