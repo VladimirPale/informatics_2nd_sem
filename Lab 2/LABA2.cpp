@@ -85,7 +85,7 @@ void calculating_speed(int amount_vehicles,CARS *vehicles)//////////////////////
 }
 
 
-friend void PrintSpeed(int amount_vehicles,CARS *vehicles,int i)
+void PrintSpeed(CARS *vehicles,int i)
 {
   cout<<"Speed:"<<vehicles[i].speed<<"\n";
 }
@@ -105,7 +105,7 @@ double Get_fuel_consumption()
    return fuel_consumption;
 }
 
-friend void Showfuelcons(int amount_vehicles,CARS *vehicles,int i)
+void Showfuelcons(CARS *vehicles,int i)
 {
  cout<<"Fuel consumption:"<<vehicles[i].fuel_consumption<<"\n";
 }
@@ -152,7 +152,7 @@ void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS 
         int seconds =(int)((time_of_the_race[i] * 3600) - (hours * 3600) - (minutes * 60));
 
         cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";
-        cout << "Amount_refuelings: " << num_refuelings[i] << "\n";
+        cout << "AMOUNT REFUELING: " << num_refuelings[i] << "\n";
 }
 }
 void Calculation_track(int lenght_of_the_track, CARS *vehicles, int amount_vehicles)
@@ -161,7 +161,7 @@ void Calculation_track(int lenght_of_the_track, CARS *vehicles, int amount_vehic
     string name_v[amount_vehicles];
     double time_of_race[amount_vehicles];
     for (int i =0; i< amount_vehicles; i++){
-    time_of_race[i] = (lenght_of_the_track /double(vehicles[i].Get_speed()));
+      time_of_race[i] = (lenght_of_the_track /vehicles[i].Get_speed());
     }
     PrintAndSortRaceResults(amount_vehicles, time_of_race,vehicles,lenght_of_the_track);
 }
@@ -204,7 +204,7 @@ CARS::CARS(int amount_vehicles, CARS* vehicles){
     {
       if(amount_wheels<=0)
       {
-        cout<<"ERROR! Try again(amount wheels>0)"<<"\n";
+        cout<<"ERROR!TRY AGAIN(amount of wheels>0)"<<"\n";
         getInput(&amount_wheels);
       }
     } while(amount_wheels<=0);
@@ -215,7 +215,7 @@ CARS::CARS(int amount_vehicles, CARS* vehicles){
     {
       if(volume_tank<=0)
       {
-        cout<<"Error! Try again(volume tank>0)"<<"\n";
+        cout<<"ERROR!TRY AGAIN(volume tank>0)"<<"\n";
         getInput(&volume_tank);
       }
     } while(volume_tank<=0);
@@ -226,7 +226,7 @@ CARS::CARS(int amount_vehicles, CARS* vehicles){
     {
       if(power<=0)
       {
-        cout<<"Error! Try again(power>0)"<<"\n";
+        cout<<"ERROR!TRY AGAIN(power>0)"<<"\n";
         getInput(&power);
       }
     } while(power<=0);
