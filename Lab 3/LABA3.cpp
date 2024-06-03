@@ -1,4 +1,4 @@
-#include <iostream>
+ #include <iostream>
 #include <math.h>
 #include <iostream>
 #include <string>
@@ -29,6 +29,7 @@ void getInput(double *input) {
         getInput(input);
     }
 }
+
 class WHEELS{
 protected:
     double status;
@@ -46,6 +47,11 @@ void status_wheel(double wheel_mileage){
     }
     if(s>100){ status = 1};
 }
+WHEELS(double mileage = 0, int status = 0) : mileage(mileage), status(status) {}
+
+    double wheel_mileage() const {
+        return mileage;
+    }
 };
 class FUEL_SYSTEM{
 protected:
@@ -57,6 +63,8 @@ public:
   cout<<"fuel system created"<<"\n";
   }
 }
+ FUEL_SYSTEM(double volume_tank = 0) : volume_tank(volume_tank) {}
+
 };
 
 class ENGINE{
@@ -64,16 +72,21 @@ protected:
     double power ;
     double Fuel_consumption;
 public:
-    FUEL_SYSTEM( ){
-  {
-  cout<<"engine created"<<"\n";
-  }
-}
-void calculating_fuel_consumption(double power)//////////////////////////////
-{
+    ENGINE(double power = 0) : power(power) {}
+
+    void Set_power(double power) {
+        this->power = power;
+    }
+  
+    void calculating_fuel_consumption(double power)//////////////////////////////
+    {
        return fabs(pow((vehicles[i].power), 0.5) / pow((double)1.5, (double)(vehicles[i].power / 1000)));
-}
+    }
+     ENGINE(double power = 0) : power(power) {}
+
 };
+
+
 class CARS: public ENGINE, public FUEL_SYSTEM {
 private:
 string name_of_car;
@@ -81,7 +94,11 @@ double mileage;
 int amount_wheels;
 double current_speed;
 public:
-CARS(int amount_vehicles, CARS* vehicles){
+WHEELS* wheels;
+CARS(int amount_wheels, double power, double volume_tank) : 
+    ENGINE(power), FUEL_SYSTEM(volume_tank), 
+amount_wheels(amount_wheels), wheels(new WHEELS[amount_wheels]) {}
+CARS(int amount_vehicles, CARS* vehicles, double power, double volume_tank){
   for(int i=0;i<amount_vehicles;i++)
   {
     string carname;
@@ -128,24 +145,16 @@ CARS(int amount_vehicles, CARS* vehicles){
     vehicles[i].Set_power(power);
   }
 }
-void Set_name(string name_of_car) {
-    this->name_of_car=name_of_car;
-    }
-string Get_name() {
-    return name_of_car;
-}
-void Set_amount_wheels(int amount_wheels)
-{
-  this->amount_wheels=amount_wheels;
-}
-int Get_amount_wheels()
-{
-  return amount_wheels;
-}
+void Set_name(string name_of_car) {this->name_of_car=name_of_car;}
 
-double Get_speed(){
-    return speed;
-}
+string Get_name() {return name_of_car;}
+
+void Set_amount_wheels(int amount_wheels){this->amount_wheels=amount_wheels;}//сеттер для количесва колес 
+
+int Get_amount_wheels(){return amount_wheels;}//геттер для количества колес
+
+double Get_speed(){return speed;}// геттер для скорости 
+
 void calculating_speed(int amount_vehicles,CARS *vehicles)/////////////////////////////////////////////
 {
     wheel_status_
@@ -264,7 +273,7 @@ void output(int amount_vehicles,CARS *vehicles)
  }
 
 
-void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
+void menu(int amount_vehicles,CARS *vehicles,double power, double volume_tank, int lenght_of_the_track)
 {
   int choice;
   int exit=0;
@@ -284,7 +293,7 @@ void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
 
       case 1:
       new_page();
-      CARS(amount_vehicles,vehicles);
+      CARS(amount_vehicles,vehicles,power,volume_tank)
       for(int i=amount_vehicles-1;i<amount_vehicles;++i)
       {
       vehicles[i].calculating_fuel_consumption(amount_vehicles, vehicles);
