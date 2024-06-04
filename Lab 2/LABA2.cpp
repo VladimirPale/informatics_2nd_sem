@@ -111,7 +111,7 @@ void calculating_speed(int amount_vehicles,CARS *vehicles)//////////////////////
 {
    for(int i=0;i<amount_vehicles;i++)
     {
-      vehicles[i].speed=fabs(((vehicles[i].power-(vehicles[i].power/2))*20)/pow((double)vehicles[i].amount_wheels,(double)2));
+      vehicles[i].speed=fabs(((vehicles[i].power/(double)2)*20)/pow((double)vehicles[i].amount_wheels,(double)2));
     }
 }
 
