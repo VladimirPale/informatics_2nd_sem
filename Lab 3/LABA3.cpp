@@ -145,6 +145,26 @@ CARS(int amount_vehicles, CARS* vehicles, double power, double volume_tank){
     vehicles[i].Set_power(power);
   }
 }
+ friend ostream& operator<<(ostream& out, const CARS& car) {
+        out << "Car name: " << car.name_of_car << endl;
+        out << "Number of wheels: " << car.amount_wheels << endl;
+        out << "Mileage: " << fixed << setprecision(2) << car.mileage << endl;
+        out << "Wheel status:\n";
+        for (int i = 0; i < car.amount_wheels; i++) {
+            out << "Wheel " << i + 1 << ": ";
+            if (car.wheels[i].status == 1) {
+                out << "Broken\n";
+            } else if (car.wheels[i].status == 0) {
+                out << "Good condition\n";
+            }
+        }
+        out << "Volume tank: " << car.volume << endl;
+        out << "Current volume: " << car.current_volume << endl;
+        out << "Engine consumption: " << car.Fuel_consumption << endl;
+        out << "Speed: " << car.current_speed << endl;
+
+        return out;
+    }
 void Set_name(string name_of_car) {this->name_of_car=name_of_car;}
 
 string Get_name() {return name_of_car;}
