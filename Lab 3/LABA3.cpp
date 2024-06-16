@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 using namespace std;
 void getInput(int *input) {
     string inputString;
@@ -33,10 +34,9 @@ void getInput(double *input) {
 }
 
 class WHEELS{
-protected:
-    double status;
-    double mileage_wheel;
 public:
+    double mileage_wheel;
+    double status;
     double get_mileage_wheel() {return mileage_wheel;}
     void set_status(double new_status) {status = new_status;}
     double get_status() const {return status;}
@@ -44,14 +44,14 @@ public:
 
 void status_wheel(double wheel_mileage){
     int s =0;
-    if(status!=0){
-        s =rand() %99 + wheel_mileage*(rand()%100)*0.01;
+    if(status==0){
+        s =rand() %99 + wheel_mileage*(rand()%100)*0.002;
     }
     if(s>100){ status = 1;}
 }
 WHEELS(double mileage = 0, int status = 0) : mileage_wheel(mileage), status(status) {}
 
-    double get_wheel_mileage() const { // Изменили имя метода
+    double get_wheel_mileage() const {
         return mileage_wheel;
     }
 };
@@ -61,6 +61,10 @@ protected:
     double current_volume;
 public:
  FUEL_SYSTEM(double volume_tank = 0) : volume(volume_tank) {}
+ void calc_current_volume(double Volume_tank, double lenght_of_the_track,int num_ref,double engine_consumption)
+{
+  current_volume= Volume_tank + num_ref * Volume_tank - lenght_of_the_track / 100 * engine_consumption;
+}
     void set_volume(double new_volume) {volume = new_volume;}
     double get_volume() const {return volume;}
     void set_current_volume(double new_current_volume) {current_volume = new_current_volume;}
@@ -95,12 +99,15 @@ int amount_wheels;
 double current_speed;
 double time_of_race;
 public:
+int brokenwheels=0;
 WHEELS* wheels;
- CARS(){
-        cout << "Enter vehicle name: ";
-        getline(cin, name_of_car); // Используем getline, чтобы ввести имя с пробелами
+CARS(){
+    cout<<"Created\n";
+}
+ CARS(string vehicle_name){
+        Set_name(vehicle_name);
         cout << "Enter number of wheels for vehicle: ";
-        cin >> amount_wheels;
+        getInput(&amount_wheels);
         while ( amount_wheels <= 0) {
             cout << "Error! Please enter a positive integer for the number of wheels: ";
             getInput(&amount_wheels);
@@ -108,13 +115,9 @@ WHEELS* wheels;
 
         wheels = new WHEELS[amount_wheels];
 
-        wheels = new WHEELS[amount_wheels];
         for (int i = 0; i < amount_wheels; i++) {
             wheels[i] = WHEELS();
         }
-
-        mileage = 0;
-        current_speed = 0;
 
         cout << "Enter the power of the car:\t";
         double Cpower;
@@ -123,7 +126,7 @@ WHEELS* wheels;
             cout << "Error! Please enter a positive number for the power: ";
             getInput(&Cpower);
         }
-        Cpower = power;
+        power = Cpower;
 
         cout << "Enter the Volume of the tank:";
         double Volume_tank;
@@ -132,11 +135,42 @@ WHEELS* wheels;
             cout << "Error! Please enter a positive number for the volume: ";
             getInput(&Volume_tank);
         }
-        Volume_tank=volume;
-        Volume_tank=Fuel_consumption;
+        volume= Volume_tank;
+        current_volume=Volume_tank;
+        Fuel_consumption=calculating_fuel_consumption(power);
+        calculating_speed();
 
 
     }
+      friend ostream& operator<<(ostream& out, const CARS& car) {
+
+
+        out << "Car name: " << car.name_of_car << endl;
+        out << "Number of wheels: " << car.amount_wheels << endl;
+        out << "Wheel status:\n";
+        for (int i = 0; i < car.amount_wheels; i++) {
+            out << "Wheel " << i + 1 << ": ";
+            if (car.wheels[i].status == 1) {
+                out << "Broken\n";
+            } else if (car.wheels[i].status == 0) {
+                out << "Good condition\n";
+            }
+        }
+        out << "Volume tank: " << car.volume << endl;
+        out << "Current volume: " << car.current_volume << endl;
+        out << "Engine consumption: " << car.Fuel_consumption << endl;
+        out << "Speed: " << car.current_speed << endl;
+
+        return out;
+    }
+    void Wheel_mileage(CARS *vehicles, int amount_vehicles, double length_of_the_track) {
+    for (int i = 0; i < amount_vehicles; i++) {
+        for (int j = 0; j < vehicles[i].Get_amount_wheels(); j++) {
+            vehicles[i].wheels[j].mileage_wheel += length_of_the_track;
+        }
+    }
+}
+
 void Set_name(string name_of_car) {this->name_of_car=name_of_car;}
 
 string Get_name() {return name_of_car;}
@@ -153,9 +187,8 @@ void Set_time_of_race(int time_of_race){this->time_of_race=time_of_race;}
 
 void calculating_speed()/////////////////////////////////////////////
 {
-    int brokenWheels=0;
-    for(int t=0; t<amount_wheels; t++){brokenWheels += wheels[t].get_status();}
-      current_speed=fabs(((power-(power/2))*20)/pow(amount_wheels,(double)2))/pow(2,double(brokenWheels));
+    for(int t=0; t<amount_wheels; t++){brokenwheels += wheels[t].get_status();}
+      current_speed=fabs(((power-(power/2))*20)/pow(amount_wheels,(double)2))/pow(2,double(brokenwheels));
 }
 void PrintSpeed(CARS *vehicles,int i)
 {
@@ -205,9 +238,19 @@ void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS 
         cout << "AMOUNT REFUELING: " << num_refuelings[i] << "\n";
 }
 }
-
+void after_track(double mileage) {
+    for (int i = 0; i < amount_wheels; i++) {
+        wheels[i].status_wheel(mileage);
+    }
+}
 };
-
+void Wheel_mileage(CARS *vehicles, int amount_vehicles, double length_of_the_track) {
+    for (int i = 0; i < amount_vehicles; i++) {
+        for (int j = 0; j < vehicles[i].Get_amount_wheels(); j++) {
+            vehicles[i].wheels[j].mileage_wheel += length_of_the_track;
+        }
+    }
+}
 void Calculation_track(int lenght_of_the_track, CARS *vehicles, int amount_vehicles)
 {
     int number_refills[amount_vehicles];
@@ -252,6 +295,7 @@ void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
   int choice;
   int exit=0;
   int flag=0;
+  double mil=0;
   while (exit==0)
   {
   int choice;
@@ -262,66 +306,102 @@ void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
   cout<<"4.Calculation_track"<<"\n";
   cout<<"5.Exit"<<"\n";
   getInput(&choice);
-  switch(choice)
-    {
-
-      case 1:
+  switch(choice){
+    case 1:{
       new_page();
-      for(int i=0;i<amount_vehicles;++i)
-      {
+       string vehicle_name;
        for (int i = 0; i < amount_vehicles; ++i) {
-            vehicles[i] = CARS();
-       }
-        break;
+            cout << "Enter vehicle name " << ": ";
+            getline(cin, vehicle_name);
+            vehicles[i] = CARS(vehicle_name);
       }
       flag++;
       break;
-      case 2:
+    }
+    case 2:{
       new_page();
       if(flag==0){
         cout<<"You have not entered the vehicles!(TRY AGAIN)"<<"\n";
         break;
-      }
-      output(amount_vehicles,vehicles);
+        }
+       for(int i=0;i<amount_vehicles;++i)
+        {
+      cout<<vehicles[i];
+        }
       break;
-      case 3:
+    }
+    case 3:{
       new_page();
       cout<<"Enter the lenght of the track: ";
       getInput(&lenght_of_the_track);
       do
-    {
-      if(lenght_of_the_track<=0)
-       {
-          cout<<"Error, try again(track length must be positive) \n";
-          getInput(&lenght_of_the_track);
-      }
-    } while(lenght_of_the_track<=0);
-    break;
-      case 4:
-      new_page();
-      if(flag==0){
+        {
+            if(lenght_of_the_track<=0)
+        {
+            cout<<"Error, try again(track length must be positive) \n";
+            getInput(&lenght_of_the_track);
+        }
+        } while(lenght_of_the_track<=0);
+        break;
+    }
+      case 4:{
+        new_page();
+        if(flag==0){
         cout<<"YOU HAVE NOT ENTERED VEHICLE DATA";
         break;
+        }
+        if(lenght_of_the_track==0){
+            cout<<"YOU HAVE NOT ENTERED LENGHT DATA";
+            break;
+            }
+        if(lenght_of_the_track==0)
+          {
+            cout<<"ENTER LENGHT OF THE TRACK , before determinate track!"<<"\n";
+            break;
+          }
+          Calculation_track(lenght_of_the_track, vehicles, amount_vehicles);
+          Wheel_mileage(vehicles,amount_vehicles,lenght_of_the_track);
+          mil=mil+lenght_of_the_track;
+          for(int k=0;k<amount_vehicles;++k)
+            {
+              for(int j=0;j<vehicles[k].Get_amount_wheels();++j)
+                {
+                  if(vehicles[k].wheels[j].status==0)
+                  {
+                    for(int i = 0; i < amount_vehicles; ++i) {
+                        vehicles[i].after_track(mil);
+                    }
+                  }
+                }
+            }
+          for(int i=0;i<amount_vehicles;++i)
+            {
+              vehicles[i].brokenwheels=0;
+              for(int j=0;j<vehicles[i].Get_amount_wheels();++j)
+                {
+                  if(vehicles[i].wheels[j].status==1)
+                  {
+                    vehicles[i].brokenwheels++;
+                    vehicles[i].calculating_speed();
+                  }
+                }
+              vehicles[i].calc_current_volume(vehicles[i].get_volume(),lenght_of_the_track,vehicles[i].refueling(lenght_of_the_track,amount_vehicles, vehicles, i), vehicles[i].Get_fuel_consumption());
+            }
+          break;
+
       }
-       if(lenght_of_the_track==0){
-        cout<<"YOU HAVE NOT ENTERED LENGHT DATA";
-        break;
-      }
-      new_page();
-      Calculation_track(lenght_of_the_track,vehicles,amount_vehicles);
-      break;
        case 5:
-      new_page();
-      cout<<"Are you sure to exit? 0-no\n";
-      getInput(&exit);
-      if(exit==1)
-      {
-        return;
-      }
-      break;
+        new_page();
+        cout<<"Are you sure to exit? 0-no\n";
+        getInput(&exit);
+        if(exit==1)
+        {
+            return;
+        }
+        break;
       default:
-      cout<<"Error of menu! Try again"<<"\n";
-      break;
+        cout<<"Error of menu! Try again"<<"\n";
+        continue;
 
     }
   }
