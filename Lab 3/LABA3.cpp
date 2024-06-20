@@ -300,7 +300,6 @@ void menu(int amount_vehicles,CARS* &vehicles, double lenght_of_the_track)
   int choice;
   int exit=0;
   int flag=0;
-  double mil=0;
   while (exit==0)
   {
   int choice;
