@@ -36,21 +36,19 @@ void getInput(double *input) {
 class WHEELS{
 public:
     double mileage_wheel;
-    double status;
-    double get_mileage_wheel() {return mileage_wheel;}
-    void set_status(double new_status) {status = new_status;}
+    int status;
+    int past_status;
     double get_status() const {return status;}
-    void set_mileage(double new_mileage) {mileage_wheel = new_mileage;}
 
-void status_wheel(double wheel_mileage){
+void status_wheel(){
     int s =0;
+    past_status=status;
     if(status==0){
-        s =rand() %99 + wheel_mileage*(rand()%100)*0.002;
+        s =rand() %99 + mileage_wheel*(rand()%100)*0.002;
     }
     if(s>100){ status = 1;}
 }
-WHEELS(double mileage = 0, int status = 0) : mileage_wheel(mileage), status(status) {}
-
+WHEELS() {status=0;mileage_wheel=0;};
     double get_wheel_mileage() const {
         return mileage_wheel;
     }
@@ -60,15 +58,12 @@ protected:
     double volume;
     double current_volume;
 public:
- FUEL_SYSTEM(double volume_tank = 0) : volume(volume_tank) {}
- void calc_current_volume(double Volume_tank, double lenght_of_the_track,int num_ref,double engine_consumption)
+ FUEL_SYSTEM() {volume = 0;current_volume=0;};
+ void calc_current_volume(double Volume_tank, double lenght_of_the_track,int num_ref,double consumption)
 {
-  current_volume= Volume_tank + num_ref * Volume_tank - lenght_of_the_track / 100 * engine_consumption;
+  current_volume= Volume_tank + num_ref * Volume_tank - lenght_of_the_track / 100 * consumption;
 }
-    void set_volume(double new_volume) {volume = new_volume;}
-    double get_volume() const {return volume;}
-    void set_current_volume(double new_current_volume) {current_volume = new_current_volume;}
-    double get_current_volume() const {return current_volume;}
+    double get_volume() {return volume;}
 };
 
 class ENGINE{
@@ -76,14 +71,12 @@ protected:
     double power ;
     double Fuel_consumption;
 public:
-    ENGINE(double power = 0) : power(power) {}
+    ENGINE() {power = 0;Fuel_consumption=0;};
 
-    void Set_power(double power){this->power = power;}
     double Get_power() const {return power;}
-    void Set_fuel_consumption(double Fuel_consumption) {this->Fuel_consumption = Fuel_consumption;}
     double Get_fuel_consumption() const {return Fuel_consumption;}
 
-    double calculating_fuel_consumption(double power)//////////////////////////////
+    double calculating_fuel_consumption(double power)
     {
        return fabs(pow((power), 0.5) / pow((double)1.5, (double)(power / 1000)));
     }
@@ -97,6 +90,8 @@ string name_of_car;
 double mileage;
 int amount_wheels;
 double current_speed;
+double start_speed;
+bool speed_s;
 double time_of_race;
 public:
 int brokenwheels=0;
@@ -122,6 +117,7 @@ CARS(){
         cout << "Enter the power of the car:\t";
         double Cpower;
         getInput(&Cpower);
+        speed_s=NULL;
         while ( Cpower <= 0) {
             cout << "Error! Please enter a positive number for the power: ";
             getInput(&Cpower);
@@ -151,7 +147,9 @@ CARS(){
         for (int i = 0; i < car.amount_wheels; i++) {
             out << "Wheel " << i + 1 << ": ";
             if (car.wheels[i].status == 1) {
-                out << "Broken\n";
+                out << "Broken/";
+                if (car.wheels[i].past_status == 1) {out << "(in past track-Broken)\n";}
+                if (car.wheels[i].past_status == 0) {out << "(in past track-Good condition)\n";}
             } else if (car.wheels[i].status == 0) {
                 out << "Good condition\n";
             }
@@ -159,11 +157,11 @@ CARS(){
         out << "Volume tank: " << car.volume << endl;
         out << "Current volume: " << car.current_volume << endl;
         out << "Engine consumption: " << car.Fuel_consumption << endl;
-        out << "Speed: " << car.current_speed << endl;
+         out << "Speed: " << car.current_speed << " (Initial speed:" << car.start_speed << ")" << endl;
 
         return out;
     }
-    void Wheel_mileage(CARS *vehicles, int amount_vehicles, double length_of_the_track) {
+    void Wheel_mileage(CARS* &vehicles, int amount_vehicles, double length_of_the_track) {
     for (int i = 0; i < amount_vehicles; i++) {
         for (int j = 0; j < vehicles[i].Get_amount_wheels(); j++) {
             vehicles[i].wheels[j].mileage_wheel += length_of_the_track;
@@ -175,41 +173,48 @@ void Set_name(string name_of_car) {this->name_of_car=name_of_car;}
 
 string Get_name() {return name_of_car;}
 
-void Set_amount_wheels(int amount_wheels){this->amount_wheels=amount_wheels;}//сеттер для количесва колес
-
-int Get_amount_wheels(){return amount_wheels;}//геттер для количества колес
+int Get_amount_wheels(){return amount_wheels;}
 
 double Get_speed(){return current_speed;}
 
 double Get_time_of_race(){return time_of_race;}
 
-void Set_time_of_race(int time_of_race){this->time_of_race=time_of_race;}
+void Set_time_of_race(double time_of_race){this->time_of_race=time_of_race;}
 
-void calculating_speed()/////////////////////////////////////////////
-{
-    for(int t=0; t<amount_wheels; t++){brokenwheels += wheels[t].get_status();}
-      current_speed=fabs(((power-(power/2))*20)/pow(amount_wheels,(double)2))/pow(2,double(brokenwheels));
+void calculating_speed() {
+  brokenwheels = 0;
+  for (int t = 0; t < amount_wheels; t++) {
+    brokenwheels += wheels[t].get_status();
+  }
+  double s = 0.0;
+  if ((amount_wheels - brokenwheels) == 0) {
+    s = 1.0 / amount_wheels;
+  }
+  current_speed = fabs((((double)(power) - ((double)(power) / 2.0)) * 20.0) / pow(amount_wheels, 2.0)) * (((amount_wheels - brokenwheels) + s) / amount_wheels);
+  if(!speed_s){start_speed=current_speed; speed_s=1;}
 }
-void PrintSpeed(CARS *vehicles,int i)
+
+void PrintSpeed(CARS* &vehicles,int i)
 {
   cout<<"Speed:"<<vehicles[i].current_speed<<"\n";
 }
 
-void Showfuelcons(CARS *vehicles,int i)
+void Showfuelcons(CARS* &vehicles,int i)
 {
  cout<<"Fuel consumption:"<<vehicles[i].Fuel_consumption<<"\n";
 }
 ~CARS( ){
   {
-  cout<<"Vehicle delete"<<"\n";
+      //cout<<"\n1234\n";delete[] wheels
+
   }
 }
-int refueling(int lenght_of_the_track, int amount_vehicles, CARS *vehicles, int i){
+int refueling(int lenght_of_the_track, int amount_vehicles, CARS* &vehicles, int i){
       int number_of_refuelings;
       number_of_refuelings=(int)(((lenght_of_the_track/double(100)) * vehicles[i].Fuel_consumption) / vehicles[i].volume);
         return number_of_refuelings;
 }
-void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS *vehicles,int lenght_of_the_track) {
+void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS* &vehicles,int lenght_of_the_track) {
     string name_v[amount_vehicles];
     for(int i = 0; i < amount_vehicles; i++){
         name_v[i] = vehicles[i].Get_name();
@@ -238,20 +243,20 @@ void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS 
         cout << "AMOUNT REFUELING: " << num_refuelings[i] << "\n";
 }
 }
-void after_track(double mileage) {
+void after_track() {
     for (int i = 0; i < amount_wheels; i++) {
-        wheels[i].status_wheel(mileage);
+        wheels[i].status_wheel();
     }
 }
 };
-void Wheel_mileage(CARS *vehicles, int amount_vehicles, double length_of_the_track) {
+void Wheel_mileage(CARS* &vehicles, int amount_vehicles, double length_of_the_track) {
     for (int i = 0; i < amount_vehicles; i++) {
         for (int j = 0; j < vehicles[i].Get_amount_wheels(); j++) {
             vehicles[i].wheels[j].mileage_wheel += length_of_the_track;
         }
     }
 }
-void Calculation_track(int lenght_of_the_track, CARS *vehicles, int amount_vehicles)
+void Calculation_track(double lenght_of_the_track, CARS* &vehicles, int amount_vehicles)
 {
     int number_refills[amount_vehicles];
     string name_v[amount_vehicles];
@@ -276,7 +281,7 @@ void new_page()
       cout<<"\n";
     }
 }
-void output(int amount_vehicles,CARS *vehicles)
+void output(int amount_vehicles,CARS* &vehicles)
 {
   for(int i=0;i<amount_vehicles;i++)
     {
@@ -290,7 +295,7 @@ void output(int amount_vehicles,CARS *vehicles)
  }
 
 
-void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
+void menu(int amount_vehicles,CARS* &vehicles, double lenght_of_the_track)
 {
   int choice;
   int exit=0;
@@ -361,31 +366,24 @@ void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
           }
           Calculation_track(lenght_of_the_track, vehicles, amount_vehicles);
           Wheel_mileage(vehicles,amount_vehicles,lenght_of_the_track);
-          mil=mil+lenght_of_the_track;
-          for(int k=0;k<amount_vehicles;++k)
-            {
-              for(int j=0;j<vehicles[k].Get_amount_wheels();++j)
-                {
-                  if(vehicles[k].wheels[j].status==0)
-                  {
-                    for(int i = 0; i < amount_vehicles; ++i) {
-                        vehicles[i].after_track(mil);
-                    }
-                  }
-                }
+         for (int k = 0; k < amount_vehicles; ++k) {
+            bool needsAfterTrack = false;
+
+            for (int j = 0; j < vehicles[k].Get_amount_wheels(); ++j) {
+                if (vehicles[k].wheels[j].status == 0) {
+                    needsAfterTrack = true;
+                break;
             }
+            }
+
+        if (needsAfterTrack) {
+            vehicles[k].after_track();
+        }
+        }
           for(int i=0;i<amount_vehicles;++i)
             {
-              vehicles[i].brokenwheels=0;
-              for(int j=0;j<vehicles[i].Get_amount_wheels();++j)
-                {
-                  if(vehicles[i].wheels[j].status==1)
-                  {
-                    vehicles[i].brokenwheels++;
-                    vehicles[i].calculating_speed();
-                  }
-                }
-              vehicles[i].calc_current_volume(vehicles[i].get_volume(),lenght_of_the_track,vehicles[i].refueling(lenght_of_the_track,amount_vehicles, vehicles, i), vehicles[i].Get_fuel_consumption());
+                vehicles[i].calculating_speed();
+                vehicles[i].calc_current_volume(vehicles[i].get_volume(),lenght_of_the_track,vehicles[i].refueling(lenght_of_the_track,amount_vehicles, vehicles, i), vehicles[i].Get_fuel_consumption());
             }
           break;
 
@@ -408,13 +406,10 @@ void menu(int amount_vehicles,CARS *vehicles, int lenght_of_the_track)
 }
 
 
-
-
-
 int main() {
   srand(time(NULL));
-  int amount_vehicles=0;
-  int lenght_of_the_track=0;
+  int amount_vehicles;
+  double lenght_of_the_track;
   cout << "How many vehicles do you want to create?";
   getInput(&amount_vehicles);
   do
