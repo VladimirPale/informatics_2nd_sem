@@ -205,13 +205,13 @@ void Showfuelcons(CARS* &vehicles,int i)
 }
 ~CARS( ){
   {
-      //cout<<"\n1234\n";delete[] wheels
+      //cout<<"\n1234\n";//delete[] wheels////////////////передача по const
 
   }
 }
-int refueling(int lenght_of_the_track, int amount_vehicles, CARS* &vehicles, int i){
-      int number_of_refuelings;
-      number_of_refuelings=(int)(((lenght_of_the_track/double(100)) * vehicles[i].Fuel_consumption) / vehicles[i].volume);
+double refueling(int lenght_of_the_track, int amount_vehicles, CARS* &vehicles, int i){
+      double number_of_refuelings;
+      number_of_refuelings=(floor)(((lenght_of_the_track/double(100)) * vehicles[i].Fuel_consumption) / vehicles[i].volume);
         return number_of_refuelings;
 }
 void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS* &vehicles,int lenght_of_the_track) {
@@ -219,7 +219,7 @@ void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS*
     for(int i = 0; i < amount_vehicles; i++){
         name_v[i] = vehicles[i].Get_name();
     }
-    int num_refuelings[amount_vehicles];
+    double num_refuelings[amount_vehicles];
     for (int i =0; i< amount_vehicles; i++){
         num_refuelings[i] = refueling(lenght_of_the_track, amount_vehicles,vehicles, i);
     }
@@ -235,9 +235,9 @@ void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS*
     }
     for (int i = 0; i < amount_vehicles; i++) {
         cout << "VEHICLE: " << name_v[i] << "\n";
-        int hours = (int)(time_of_the_race[i]);
-        int minutes = (int)((time_of_the_race[i] - hours) * 60);
-        int seconds =(int)((time_of_the_race[i] * 3600) - (hours * 3600) - (minutes * 60));
+        double hours = (floor)(time_of_the_race[i]);
+        double minutes = (floor)((time_of_the_race[i] - hours) * 60);
+        double seconds =(floor)((time_of_the_race[i] * 3600) - (hours * 3600) - (minutes * 60));
 
         cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";
         cout << "AMOUNT REFUELING: " << num_refuelings[i] << "\n";
@@ -258,7 +258,7 @@ void Wheel_mileage(CARS* &vehicles, int amount_vehicles, double length_of_the_tr
 }
 void Calculation_track(double lenght_of_the_track, CARS* &vehicles, int amount_vehicles)
 {
-    int number_refills[amount_vehicles];
+    long int number_refills[amount_vehicles];
     string name_v[amount_vehicles];
     double first_time_of_race;
     double time_of_race[amount_vehicles];
@@ -306,7 +306,7 @@ void menu(int amount_vehicles,CARS* &vehicles, double lenght_of_the_track)
   cout<<"MENU\n";
   cout<<"1.Input information about vehicles"<<"\n";
   cout<<"2.Output information about vehicles"<<"\n";
-  cout<<"3.Input the lenght of track"<<"\n";;
+  cout<<"3.Input the length of track"<<"\n";;
   cout<<"4.Calculation_track"<<"\n";
   cout<<"5.Exit"<<"\n";
   getInput(&choice);
@@ -355,7 +355,7 @@ void menu(int amount_vehicles,CARS* &vehicles, double lenght_of_the_track)
         break;
         }
         if(lenght_of_the_track==0){
-            cout<<"YOU HAVE NOT ENTERED LENGHT DATA";
+            cout<<"YOU HAVE NOT ENTERED LENGТН DATA";
             break;
             }
         if(lenght_of_the_track==0)
