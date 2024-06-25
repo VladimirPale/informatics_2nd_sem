@@ -238,8 +238,11 @@ void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS*
         double hours = (floor)(time_of_the_race[i]);
         double minutes = (floor)((time_of_the_race[i] - hours) * 60);
         double seconds =(floor)((time_of_the_race[i] * 3600) - (hours * 3600) - (minutes * 60));
+        if ((hours==0)&&(minutes==0)){ cout << "TIME OF THE RACE: "<< seconds << " sec\n";}
+        else if (hours==0){ cout << "TIME OF THE RACE:" << minutes << " min "<<seconds << " sec\n";}
+        else{cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";}
 
-        cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";
+
         cout << "AMOUNT REFUELING: " << num_refuelings[i] << "\n";
 }
 }
