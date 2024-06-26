@@ -1,0 +1,578 @@
+#include <iostream>
+#include <math.h>
+#include <iostream>
+#include <string>
+#include <random>
+#include <sstream>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <limits>
+#define refueling_time 0.008
+#define reWheel_time 0.005
+#define dt 0.0003
+using namespace std;
+int checkinput(int input_value)
+{
+    cin >> input_value;
+    if (cin.fail() || input_value <= 0) {
+        while (!(cin >> input_value) && input_value <= 0) {
+            cout << "Uncorrect, try again\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+    return input_value;
+}
+void getInput(int *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+        return;
+    } else {
+        cout << "Error input(you input char. TRY AGAIN)!" << "\t";
+        getInput(input);     }
+}
+void getInput(double *input) {
+    string inputString;
+    getline(cin, inputString);
+    istringstream iss(inputString);
+
+    if (iss >> *input) {
+          return;
+    } else {
+
+        cout << "Error input(you input char. TRY AGAIN)!" << "\t";
+        getInput(input);
+    }
+}
+
+class WHEELS{
+public:
+    double mileage_wheel;
+    int status;
+    int past_status;
+    double get_status() const {return status;}
+    void set_status(int status) {this->status = status;}
+    virtual ~WHEELS(){};
+
+    void status_wheel(double mileage){
+        int s =0;
+        past_status=status;
+        if(status==0){
+            s =rand() %99 + mileage*(rand()%100)*0.002;
+        }
+        if(s>100){ status = 1;}
+    }
+};
+
+
+class FUEL_SYSTEM{
+protected:
+    double volume;
+    double current_volume;
+    int amount_refuelings=0;
+public:
+ FUEL_SYSTEM() {volume = 0;current_volume=0;};
+ void calc_current_volume(double engine_consumption,double mileage)
+{
+  current_volume=volume-((engine_consumption/100)*mileage);
+}
+    double get_volume() {return volume;}
+};
+
+class ENGINE{
+protected:
+    double power ;
+    double fuel_consumption;
+public:
+    ENGINE() {power = 0;fuel_consumption=0;};
+
+    double Get_power() const {return power;}
+    double Get_fuel_consumption() const {return fuel_consumption;}
+
+    double calculating_fuel_consumption(double power)
+    {
+       return fabs(pow((power), 0.5) / pow((double)1.5, (double)(power / 1000)));
+    }
+};
+
+
+class CARS: public ENGINE, public FUEL_SYSTEM {
+private:
+string name_of_car;
+double mileage;
+int amount_wheels;
+double current_speed;
+double start_speed;
+bool speed_s;
+double time_of_race;
+int current_laps;/////
+double current_mileage;////
+int num_refuelings=0;
+public:
+int brokenwheels=0;
+WHEELS* wheels;
+
+public:
+vector<WHEELS> vec_wheels;
+bool stat_of_car;
+double diftime=0;
+string get_carname(){return name_of_car;}
+void determination_speed() {
+   brokenwheels = 0;
+  for (int t = 0; t < amount_wheels; t++) {
+    brokenwheels += wheels[t].get_status();
+  }
+  double s = 0.0;
+  if ((amount_wheels - brokenwheels) == 0) {
+    s = 1.0 / amount_wheels;
+  }
+    current_speed = fabs((((double)(power) - ((double)(power) / 2.0)) * 20.0) / pow(amount_wheels, 2.0)) * (((amount_wheels - brokenwheels) + s) / amount_wheels);
+}
+void mileage_plus(){this->mileage+=current_speed*dt;}
+void current_mileage_plus(){this->current_mileage+=(current_speed*dt);}
+double get_current_mileage(){return current_mileage;};
+double get_consumption(){return calculating_fuel_consumption(power);}
+double get_mileage(){return mileage;};
+double get_current_mil(){return current_mileage;}
+double get_speed(){return current_speed;};
+void set_time_of_race(double time){this->time_of_race=time;};
+void output_time()
+{
+
+  double t = this->time_of_race;
+  double hours = (floor)(t);
+  double cur_time = (t - hours) * 60;
+  double minutes = (floor)(cur_time);
+  double seconds = (floor)((cur_time - minutes) * 60);
+        if ((hours==0)&&(minutes==0)){ cout << "TIME OF THE RACE: "<< seconds << " sec\n";}
+        else if (hours==0){ cout << "TIME OF THE RACE:" << minutes << " min "<<seconds << " sec\n";}
+        else{cout << "TIME OF THE RACE: " << hours << " hours " << minutes << " min " << seconds << " sec\n";}
+};
+void calc_broken_wheels()
+{
+  int count = 0;
+  for (int i = 0; i < vec_wheels.size(); i++)
+  {
+    if (vec_wheels[i].get_status() == 1) {
+      count++;
+    }
+  }
+  brokenwheels=count;
+}
+int get_broken_wheels(){return brokenwheels;};
+int get_current_laps(){return current_laps;};
+void plus_current_laps(){this->current_laps++;}
+double get_current_volume(){return current_volume;};
+void set_current_laps(int current_laps){this->current_laps=current_laps;};
+double get_time(){return time_of_race;};
+double get_amount_refuelings(){return num_refuelings;};
+void total_time()
+{
+  time_of_race+=diftime;
+}
+int lap_check(double lenght_lap)
+{
+  if (current_mileage-lenght_lap>=0)
+  {
+    current_laps=int(mileage/lenght_lap);
+    current_mileage=0;
+    return 1;
+  }
+  else {return 0;}
+}
+void check_refuel(double lenght_lap)
+{
+  if (current_volume <= (fuel_consumption * (lenght_lap/100)))
+  {
+    amount_refuelings++;
+    diftime+=refueling_time;
+    current_volume=volume;
+  }
+}
+void check_change_wheels()
+{
+  {
+    if((brokenwheels!=0)&&(brokenwheels<amount_wheels))
+    {
+      diftime+=reWheel_time*brokenwheels;
+      for(int i=0;i<vec_wheels.size();++i)
+        {
+          if(vec_wheels[i].get_status()==1)
+          {
+            vec_wheels[i].set_status(0);
+          }
+        }
+    }
+  }
+}
+CARS(){
+    cout<<"Created\n";
+}
+ friend istream &operator >> (istream &stream,CARS& vehicle)
+{
+  cout<<"Enter vehicle name: ";
+  stream>>vehicle.name_of_car;
+  try
+    {
+      cout<<"Enter amount of wheels: ";
+      stream>>vehicle.amount_wheels;
+      if (vehicle.amount_wheels < 0){
+          throw "amount wheels must be more than 0 ";
+    }
+    }
+    catch (const char* error_message) {
+      cerr << "exception thrown: " << error_message <<endl;
+      vehicle.amount_wheels=checkinput(vehicle.amount_wheels);
+    }
+    for (int i = 0; i < vehicle.amount_wheels; i++) {
+      WHEELS wheel1;
+      vehicle.vec_wheels.push_back(wheel1);
+      }
+    try
+      {
+        cout<<"Enter Volume tank: ";
+        stream>>vehicle.volume;;
+        if (vehicle.volume<=0){
+          throw "Volume tank must more than 0";
+        }
+      }
+      catch (const char* error_message)
+      {
+        cerr << "exception thrown: " <<error_message<<endl;
+        vehicle.volume=checkinput(vehicle.volume);
+      }
+    try
+      {
+        cout<<"Enter engine power: ";
+        stream>>vehicle.power;
+        if (vehicle.power<=0){
+          throw "Power must more than 0";
+        }
+      }
+      catch (const char* error_message)
+      {
+        cerr << "exception thrown: " <<error_message<<endl;
+          vehicle.power=checkinput(vehicle.power);
+      }
+      vehicle.current_mileage=0;
+      vehicle.current_laps=0;
+      vehicle.mileage=0;
+      vehicle.stat_of_car=0;
+      vehicle.current_volume=vehicle.volume;
+      vehicle.fuel_consumption=vehicle.calculating_fuel_consumption(vehicle.power);
+      vehicle.determination_speed();
+  return stream;
+}
+      friend ostream& operator<<(ostream& out, const CARS& car) {
+
+
+        out << "Car name: " << car.name_of_car << endl;
+        out << "Number of wheels: " << car.amount_wheels << endl;
+        out << "Wheel status:\n";
+        for (int i = 0; i < car.amount_wheels; i++) {
+            out << "Wheel " << i + 1 << ": ";
+            if (car.wheels[i].status == 1) {
+                out << "Broken/";
+                if (car.wheels[i].past_status == 1) {out << "(in past track-Broken)\n";}
+                if (car.wheels[i].past_status == 0) {out << "(in past track-Good condition)\n";}
+            } else if (car.wheels[i].status == 0) {
+                out << "Good condition\n";
+            }
+        }
+        out << "Volume tank: " << car.volume << endl;
+        out << "Current volume: " << car.current_volume << endl;
+        out << "Engine consumption: " << car.fuel_consumption << endl;
+         out << "Speed: " << car.current_speed << " (Initial speed:" << car.start_speed << ")" << endl;
+
+        return out;
+    }
+    void Wheel_mileage(CARS* &vehicles, int amount_vehicles, double length_of_the_track) {
+    for (int i = 0; i < amount_vehicles; i++) {
+        for (int j = 0; j < vehicles[i].amount_wheels; j++) {
+            vehicles[i].wheels[j].mileage_wheel += length_of_the_track;
+        }
+    }
+}
+
+CARS& operator=(const CARS& s) {
+  name_of_car = s.name_of_car;
+  amount_wheels = s.amount_wheels;
+  current_speed = s.current_speed;
+  mileage = s.mileage;
+  current_mileage=s.current_mileage;
+  current_laps=s.current_laps;
+  name_of_car=s.name_of_car;
+  return *this;
+}
+
+void calculating_speed() {
+  brokenwheels = 0;
+  for (int t = 0; t < amount_wheels; t++) {
+    brokenwheels += wheels[t].get_status();
+  }
+  double s = 0.0;
+  if ((amount_wheels - brokenwheels) == 0) {
+    s = 1.0 / amount_wheels;
+  }
+  current_speed = fabs((((double)(power) - ((double)(power) / 2.0)) * 20.0) / pow(amount_wheels, 2.0)) * (((amount_wheels - brokenwheels) + s) / amount_wheels);
+}
+
+void PrintSpeed(CARS* &vehicles,int i)
+{
+  cout<<"Speed:"<<vehicles[i].current_speed<<"\n";
+}
+
+void Showfuelcons(CARS* &vehicles,int i)
+{
+ cout<<"Fuel consumption:"<<vehicles[i].fuel_consumption<<"\n";
+}
+~CARS( ){
+  {
+      //cout<<"\n1234\n";//delete[] wheels////////////////передача по const
+
+  }
+}
+double refueling(int lenght_of_the_track, int amount_vehicles, CARS* &vehicles, int i){
+      double number_of_refuelings;
+      number_of_refuelings=(floor)(((lenght_of_the_track/double(100)) * vehicles[i].fuel_consumption) / vehicles[i].volume);
+        return number_of_refuelings;
+}
+};
+int end_race(vector<CARS> &vehicles,int amount_laps,double lenght_lap)
+{
+  int finished_cars=0;
+    for (int i=0;i<vehicles.size();i++)
+      {
+        if (vehicles[i].get_current_mil()>=amount_laps*lenght_lap)
+        {
+          finished_cars++;
+        }
+      }
+    if ( finished_cars==vehicles.size())
+    {
+      return 1;
+    }
+    else return 0;
+  }
+  vector<CARS>  RatingResults(vector<CARS> v) {
+    sort(v.begin(), v.end(), []( CARS& a,  CARS& b) {
+    if (a.get_time() != b.get_time()) {
+      return a.get_time() < b.get_time();
+    }
+    else {
+      return a.get_amount_refuelings() < b.get_amount_refuelings();
+    }
+  });
+  return v;
+}
+   void outputResults(vector<CARS> v) {
+  vector<CARS> results = RatingResults(v);
+  for (int i = 0; i < results.size(); i++) {
+    cout << results[i].get_carname() << endl;
+    results[i].output_time();
+    cout<<"Laps: "<<results[i].get_current_laps()<<endl;
+    cout << "Amount refuelings: " << int(results[i].get_amount_refuelings()) << endl;
+  }
+}
+
+void new_page()
+{
+  for(int i=0;i<100;++i)
+    {
+      cout<<"\n";
+    }
+}
+
+int end_race(vector<CARS> &vehicles,int amount_laps,double lenght_lap);
+void outputResults(vector<CARS> v);
+void menu()
+{
+ vector<CARS> vehicles;
+  int choice;
+  int exit_menu=0;
+  int amount_laps=0;
+  double lenght_lap=0;
+  int carcheck=0;
+  while(exit_menu==0)
+    {
+      cout<<"1.Input new vehicle"<<"\n";
+      cout<<"2.Check information about vehicles"<<"\n";
+      cout<<"3.Enter lenght of the track"<<"\n";;
+      cout<<"4.Determine the race"<<"\n";
+      cout<<"5.Results:"<<"\n";
+      cout<<"6.Exit"<<"\n";
+      try{
+      cin>>choice;
+        if ((choice > 6) || (choice < 1)) {
+          throw "Error, try another number!";
+          }
+        }
+        catch (const char* error_message)
+        {
+          cerr << "exception thrown: " << error_message << endl;
+          cout<<"Enter number(1-6) ";
+          choice = checkinput(choice);
+        }
+
+  switch(choice)
+    {
+      case 1: {
+      new_page();
+      CARS newcar;
+      cin>> newcar;
+      vehicles.push_back(newcar);
+      new_page();
+      cout<<"Vehicle: "<<newcar.get_carname()<<" was added"<<endl;
+        carcheck++;
+        break;
+    }
+      case 2: {
+        new_page();
+        if(carcheck==0)
+          {
+            cout<<"No vehicles"<<endl;
+            break;
+          }
+        for(int i=0;i<vehicles.size();++i)
+          {
+            cout<<vehicles[i];
+          }
+        break;
+        }
+      case 3: {
+        new_page();
+        if(carcheck==0)
+          {
+            cout<<"No vehicles"<<endl;
+            break;
+          }
+        try{
+            cout<<"Enter number of laps: ";
+            amount_laps=checkinput(amount_laps);
+            if (amount_laps<=0){
+              throw "Amount of laps must be more than 0";
+            }
+          }
+          catch (const char* error_message)
+            {
+              cerr << "exception thrown: " << error_message << endl;
+              cout<<"try again ";
+              amount_laps=checkinput(amount_laps);
+            }
+          cout << "Enter the length of the track: ";
+          lenght_lap = checkinput(lenght_lap);
+          break;
+        }
+      case 4: {
+        new_page();
+        if(carcheck==0)
+        {
+          cout<<"No vehicles"<<endl;
+          break;
+        }
+        if(amount_laps==0)
+        {
+          cout<<"No laps"<<endl;
+          break;
+        }
+        double current_time=0;
+        int racing_cars=vehicles.size();
+        while(!end_race(vehicles,amount_laps,lenght_lap))
+          {
+            if(racing_cars<=0)
+              {
+                break;
+              }
+            for(int i=0;i<vehicles.size();++i)
+              {
+                int exit=0;
+                if (vehicles[i].stat_of_car==0)
+                {
+                  vehicles[i].mileage_plus();
+                  vehicles[i].current_mileage_plus();
+                  for (int j = 0; j < vehicles[i].vec_wheels.size(); j++)
+                  {
+                        vehicles[i].vec_wheels[j].status_wheel(vehicles[i].get_mileage());
+                  }
+                  vehicles[i].calc_broken_wheels();
+                  vehicles[i].calc_current_volume(vehicles[i].get_consumption(),vehicles[i].get_current_mil());
+                  vehicles[i].determination_speed();
+                  vehicles[i].set_time_of_race(current_time);
+                  vehicles[i].output_time();
+                  cout<<"Vehicle: "<<vehicles[i].get_carname()
+                    <<" Lap: "<<vehicles[i].get_current_laps()+1<<endl
+                    <<" Current Speed: "<<vehicles[i].get_speed()<<"\n"
+                    <<" Current fuel "<<vehicles[i].get_current_volume()
+                    <<" Broken wheels: "<<vehicles[i].get_broken_wheels()<<"\n"
+                    <<" Mileage: "<<vehicles[i].get_mileage()<<"\n";
+                  if (vehicles[i].get_broken_wheels()==vehicles[i].vec_wheels.size() || (vehicles[i].get_current_volume()<=0))
+                    {
+                        exit=1;
+                        vehicles[i].set_time_of_race(current_time);
+                        vehicles[i].plus_current_laps();
+                    }
+                  if ((lenght_lap*amount_laps)-(vehicles[i].get_mileage())<=0)
+                    {
+                      exit=1;
+                      vehicles[i].set_time_of_race(current_time);
+                      vehicles[i].set_current_laps(amount_laps);
+                      vehicles[i].output_time();
+                      cout<<vehicles[i].get_carname()<<" FINISHED"<<endl;
+                    }
+                  if (exit==1)
+                    {
+                      vehicles[i].stat_of_car=1;
+                      racing_cars=racing_cars-1;
+                      break;
+                    }
+                  if (vehicles[i].lap_check(lenght_lap)==1)
+                    {
+                      vehicles[i].check_refuel(lenght_lap);
+                      vehicles[i].check_change_wheels();
+                    }
+                }
+                else {
+                  continue;
+                }
+              }
+            current_time+=dt;
+          }
+        for(int i=0;i<vehicles.size();++i)
+          {
+            vehicles[i].total_time();
+          }
+        break;
+      }
+      case 5:{
+      new_page();
+      outputResults(vehicles);
+      break;
+      }
+      case 6:{
+        new_page();
+        cout<<"Are you sure to exit? 1-yes 0-no\n";
+        cin>>exit_menu;
+        if(exit_menu==1)
+        {
+          vehicles.clear();
+          return;
+        }
+        break;
+      }
+      }
+    }
+  }
+
+
+int main() {
+  srand(time(NULL));
+  menu();
+  return 0;
+}
