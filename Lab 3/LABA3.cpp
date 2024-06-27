@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <math.h>
 #include <iostream>
@@ -211,7 +212,7 @@ void Showfuelcons(CARS* &vehicles,int i)
 }
 double refueling(int lenght_of_the_track, int amount_vehicles, CARS* &vehicles, int i){
       double number_of_refuelings;
-      number_of_refuelings=(floor)(((lenght_of_the_track/double(100)) * vehicles[i].Fuel_consumption) / vehicles[i].volume);
+      number_of_refuelings=(floor)((((lenght_of_the_track/double(100)) * vehicles[i].Fuel_consumption)) / vehicles[i].volume);
         return number_of_refuelings;
 }
 void PrintAndSortRaceResults(int amount_vehicles, double* time_of_the_race,CARS* &vehicles,int lenght_of_the_track) {
